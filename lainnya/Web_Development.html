@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul Interaktif: Web Development (SMK Kelas 10)</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chosen Palette: Warm Professional -->
+    <!-- Background: #F9FAFB (Gray 50) -->
+    <!-- Primary Text: #1F2937 (Gray 800) -->
+    <!-- Accents: #2563EB (Blue 600), #D97706 (Amber 600), #10B981 (Emerald 500) -->
+
+    <style>
+        /* Custom Chart Container Styling */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            margin: 0 auto;
+        }
+
+        /* Smooth transitions for interactive elements */
+        .transition-all-300 {
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Hide scrollbar for clean horizontal scrolling if needed */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans leading-relaxed">
+
+    <!-- Application Structure Plan: 
+         The app is structured as a "Learning Dashboard". 
+         1. Hero Section: Sets the context and motivation.
+         2. Main Navigation: Tab-based interface to switch between distinct learning modules (Tools, HTML/CSS, JS, Extras, Assessment) without page reloads.
+         3. Dynamic Content Area: The central display that updates based on the selected tab.
+         4. Interactive Playground: Specific area for HTML/CSS and JS demos to foster "learning by doing".
+         5. Assessment Area: Interactive accordions and forms for self-evaluation.
+         This structure was chosen to reduce cognitive load, allowing students to focus on one topic at a time while maintaining easy access to the big picture.
+    -->
+
+    <!-- CONFIRMATION: NO SVG graphics used (besides FontAwesome fonts). NO Mermaid JS used. -->
+
+    <!-- Navbar / Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-code text-blue-600 text-2xl"></i>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">WebDev <span class="text-blue-600">SMK</span></h1>
+                    <p class="text-xs text-gray-500 hidden sm:block">Informatika & Dasar TJKT Kelas 10</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex space-x-6 text-sm font-medium">
+                <button onclick="switchTab('dashboard')" class="nav-btn text-blue-600 hover:text-blue-800" data-target="dashboard">Dashboard</button>
+                <button onclick="switchTab('tools')" class="nav-btn text-gray-600 hover:text-blue-600" data-target="tools">1. Tools & Github</button>
+                <button onclick="switchTab('htmlcss')" class="nav-btn text-gray-600 hover:text-blue-600" data-target="htmlcss">2. HTML & CSS</button>
+                <button onclick="switchTab('js')" class="nav-btn text-gray-600 hover:text-blue-600" data-target="js">3. JavaScript</button>
+                <button onclick="switchTab('assessment')" class="nav-btn text-gray-600 hover:text-blue-600" data-target="assessment">Rangkuman & Soal</button>
+            </nav>
+            <!-- Mobile Menu Button (simplified interaction) -->
+            <button class="md:hidden text-gray-600 focus:outline-none" onclick="document.getElementById('mobile-nav').classList.toggle('hidden')">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- Mobile Nav -->
+        <div id="mobile-nav" class="hidden md:hidden bg-gray-50 border-t border-gray-200 p-4 space-y-2">
+            <button onclick="switchTab('dashboard')" class="block w-full text-left py-2 px-3 rounded hover:bg-gray-200 text-sm font-medium">Dashboard</button>
+            <button onclick="switchTab('tools')" class="block w-full text-left py-2 px-3 rounded hover:bg-gray-200 text-sm font-medium">Tools & Github</button>
+            <button onclick="switchTab('htmlcss')" class="block w-full text-left py-2 px-3 rounded hover:bg-gray-200 text-sm font-medium">HTML & CSS</button>
+            <button onclick="switchTab('js')" class="block w-full text-left py-2 px-3 rounded hover:bg-gray-200 text-sm font-medium">JavaScript</button>
+            <button onclick="switchTab('assessment')" class="block w-full text-left py-2 px-3 rounded hover:bg-gray-200 text-sm font-medium">Rangkuman & Soal</button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen">
+        
+        <!-- DASHBOARD SECTION -->
+        <section id="dashboard" class="tab-content transition-all-300">
+            <div class="mb-8 text-center">
+                <h2 class="text-3xl font-extrabold text-gray-900">Selamat Datang di Dunia Web Development</h2>
+                <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+                    Materi tambahan interaktif untuk memahami dasar-dasar pembuatan website. Mulai dari instalasi alat hingga baris kode pertama Anda.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                <!-- Intro Text -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-compass mr-2 text-blue-500"></i>Peta Perjalanan Belajar</h3>
+                    <p class="text-gray-600 mb-4">
+                        Di halaman ini, kita akan mempelajari fondasi utama yang digunakan oleh setiap website di internet. Web development adalah keterampilan penting di era digital, khususnya untuk program keahlian Teknik Jaringan Komputer dan Telekomunikasi (TJKT).
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <span class="bg-blue-100 text-blue-800 rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold mt-1 mr-3">1</span>
+                            <span><strong>Persiapan (Tools):</strong> Membangun lingkungan kerja profesional dengan VS Code dan Github.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-orange-100 text-orange-800 rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold mt-1 mr-3">2</span>
+                            <span><strong>Struktur & Tampilan:</strong> Menggunakan HTML untuk kerangka dan CSS untuk keindahan.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-yellow-100 text-yellow-800 rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold mt-1 mr-3">3</span>
+                            <span><strong>Interaksi:</strong> Membuat web "hidup" dengan JavaScript.</span>
+                        </li>
+                    </ul>
+                    <div class="mt-6">
+                        <button onclick="switchTab('tools')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 shadow-md">
+                            Mulai Belajar <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Visualization: Tech Stack Usage -->
+                <!-- Visualization & Content Choices: 
+                     Goal: Inform context showing why HTML/CSS/JS are crucial.
+                     Viz: Doughnut Chart.
+                     Interaction: Tooltips on hover.
+                     Justification: Shows the overwhelming dominance of these 3 technologies.
+                -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">Teknologi Web Paling Populer</h3>
+                    <p class="text-sm text-gray-500 text-center mb-4">Persentase website di dunia yang menggunakan teknologi ini.</p>
+                    <div class="chart-container">
+                        <canvas id="techUsageChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-gray-400 mt-4">Sumber Data: W3Techs (Ilustrasi)</p>
+                </div>
+            </div>
+            
+            <!-- Quick Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
+                    <h4 class="font-bold text-blue-900 text-lg mb-2">HTML</h4>
+                    <p class="text-sm text-blue-800">HyperText Markup Language. Ini adalah tulang punggung dari semua halaman web.</p>
+                </div>
+                <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-400">
+                    <h4 class="font-bold text-blue-900 text-lg mb-2">CSS</h4>
+                    <p class="text-sm text-blue-800">Cascading Style Sheets. Memberikan warna, tata letak, dan gaya visual.</p>
+                </div>
+                <div class="bg-yellow-50 p-6 rounded-lg border-l-4 border-yellow-400">
+                    <h4 class="font-bold text-yellow-900 text-lg mb-2">JavaScript</h4>
+                    <p class="text-sm text-yellow-800">Bahasa pemrograman yang membuat website menjadi interaktif dan dinamis.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TOOLS & GITHUB SECTION -->
+        <section id="tools" class="tab-content hidden transition-all-300">
+            <div class="border-b pb-4 mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">1. Persiapan Tools & Lingkungan Kerja</h2>
+                <p class="text-gray-600 mt-2">Sebelum coding, seorang developer harus menyiapkan "senjata" perangnya.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Visual Studio Code Guide -->
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                    <div class="flex items-center mb-4">
+                        <i class="fa-solid fa-laptop-code text-blue-600 text-3xl mr-3"></i>
+                        <h3 class="text-xl font-bold text-gray-800">Menginstal Visual Studio Code</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4 text-sm">VS Code adalah text editor paling populer saat ini karena ringan dan kaya fitur.</p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex group cursor-pointer hover:bg-gray-50 p-2 rounded">
+                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold mr-3">1</div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Unduh Installer</h4>
+                                <p class="text-sm text-gray-600">Kunjungi <span class="font-mono bg-gray-100 px-1 rounded">code.visualstudio.com</span> dan unduh versi sesuai OS (Windows/Mac/Linux).</p>
+                            </div>
+                        </div>
+                        <div class="flex group cursor-pointer hover:bg-gray-50 p-2 rounded">
+                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold mr-3">2</div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Instalasi</h4>
+                                <p class="text-sm text-gray-600">Jalankan installer. Centang opsi "Add to PATH" agar mudah diakses dari command prompt.</p>
+                            </div>
+                        </div>
+                        <div class="flex group cursor-pointer hover:bg-gray-50 p-2 rounded">
+                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold mr-3">3</div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Pasang Ekstensi Wajib</h4>
+                                <p class="text-sm text-gray-600">Buka menu Extensions (Ctrl+Shift+X). Cari dan instal: <strong>Live Server</strong> (untuk preview real-time) dan <strong>Prettier</strong> (untuk merapikan kode).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Github Guide -->
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                    <div class="flex items-center mb-4">
+                        <i class="fa-brands fa-github text-gray-800 text-3xl mr-3"></i>
+                        <h3 class="text-xl font-bold text-gray-800">Akun Github & Git Basics</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4 text-sm">Github adalah "sosial media" bagi programmer untuk menyimpan dan berbagi kode.</p>
+
+                    <div class="relative pl-6 border-l-2 border-gray-200 space-y-6">
+                        <div class="relative">
+                            <span class="absolute -left-[33px] bg-gray-800 text-white h-6 w-6 rounded-full flex items-center justify-center text-xs">1</span>
+                            <h4 class="font-bold text-gray-800">Buat Akun</h4>
+                            <p class="text-sm text-gray-600">Daftar di <span class="font-mono bg-gray-100 px-1 rounded">github.com</span>. Gunakan email sekolah atau pribadi yang profesional.</p>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute -left-[33px] bg-gray-800 text-white h-6 w-6 rounded-full flex items-center justify-center text-xs">2</span>
+                            <h4 class="font-bold text-gray-800">Repository Baru</h4>
+                            <p class="text-sm text-gray-600">Klik tombol "+" di pojok kanan atas -> "New Repository". Beri nama repo (misal: <code>belajar-web</code>).</p>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute -left-[33px] bg-gray-800 text-white h-6 w-6 rounded-full flex items-center justify-center text-xs">3</span>
+                            <h4 class="font-bold text-gray-800">Konsep Git Flow</h4>
+                            <div class="mt-2 bg-gray-100 p-3 rounded text-xs font-mono">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span>Laptop Kamu</span>
+                                    <i class="fa-solid fa-arrow-right text-gray-400"></i>
+                                    <span>Staging</span>
+                                    <i class="fa-solid fa-arrow-right text-gray-400"></i>
+                                    <span>Github.com</span>
+                                </div>
+                                <div class="text-gray-500 italic">
+                                    git add . &nbsp; -> &nbsp; git commit &nbsp; -> &nbsp; git push
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HTML & CSS SECTION -->
+        <section id="htmlcss" class="tab-content hidden transition-all-300">
+            <div class="border-b pb-4 mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">2. Memahami HTML dan CSS</h2>
+                <p class="text-gray-600 mt-2">Analogi: HTML adalah kerangka manusia, CSS adalah pakaian dan riasannya.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Theory Column -->
+                <div class="space-y-6">
+                    <div class="bg-blue-50 rounded-lg p-5">
+                        <h3 class="font-bold text-blue-900 mb-2">HTML (HyperText Markup Language)</h3>
+                        <p class="text-sm text-blue-800 mb-3">Menggunakan "Tags" untuk mendefinisikan elemen. Contoh struktur dasar:</p>
+                        <pre class="bg-gray-800 text-gray-100 p-3 rounded text-xs overflow-x-auto">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Judul Halaman&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Halo Dunia!&lt;/h1&gt;
+    &lt;p&gt;Ini paragraf.&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+                    </div>
+
+                    <div class="bg-green-50 rounded-lg p-5">
+                        <h3 class="font-bold text-green-900 mb-2">CSS (Cascading Style Sheets)</h3>
+                        <p class="text-sm text-green-800 mb-3">Menggunakan "Selectors" untuk memilih elemen HTML dan memberinya gaya.</p>
+                        <pre class="bg-gray-800 text-gray-100 p-3 rounded text-xs overflow-x-auto">
+/* Selector: h1 */
+h1 {
+  color: blue;
+  font-size: 24px;
+  text-align: center;
+}</pre>
+                    </div>
+                </div>
+
+                <!-- Interactive Playground -->
+                <!-- Goal: Change/Apply styles dynamically to understand CSS visually. -->
+                <div class="bg-white border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center relative">
+                    <h3 class="absolute top-4 left-4 text-xs font-bold text-gray-400 uppercase tracking-wide">CSS Playground</h3>
+                    
+                    <!-- The Element being styled -->
+                    <div id="demo-box" class="w-32 h-32 bg-gray-300 flex items-center justify-center text-center transition-all duration-500 mb-8 shadow-sm">
+                        <span class="text-xs font-mono">div#box</span>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="w-full grid grid-cols-2 gap-3">
+                        <button onclick="toggleStyle('bg-blue-500', 'bg-gray-300', 'Warna Biru')" class="text-xs bg-gray-100 hover:bg-gray-200 py-2 px-3 rounded text-left flex justify-between items-center">
+                            <span>background-color: blue;</span>
+                            <i id="icon-bg" class="fa-regular fa-square text-gray-400"></i>
+                        </button>
+                        <button onclick="toggleStyle('rounded-full', '', 'Bentuk Lingkaran')" class="text-xs bg-gray-100 hover:bg-gray-200 py-2 px-3 rounded text-left flex justify-between items-center">
+                            <span>border-radius: 50%;</span>
+                            <i id="icon-radius" class="fa-regular fa-square text-gray-400"></i>
+                        </button>
+                        <button onclick="toggleStyle('shadow-xl', 'shadow-sm', 'Bayangan')" class="text-xs bg-gray-100 hover:bg-gray-200 py-2 px-3 rounded text-left flex justify-between items-center">
+                            <span>box-shadow: large;</span>
+                            <i id="icon-shadow" class="fa-regular fa-square text-gray-400"></i>
+                        </button>
+                        <button onclick="toggleStyle('border-4 border-red-500', '', 'Border Merah')" class="text-xs bg-gray-100 hover:bg-gray-200 py-2 px-3 rounded text-left flex justify-between items-center">
+                            <span>border: 4px solid red;</span>
+                            <i id="icon-border" class="fa-regular fa-square text-gray-400"></i>
+                        </button>
+                        <button onclick="toggleStyle('rotate-12', '', 'Rotasi')" class="text-xs bg-gray-100 hover:bg-gray-200 py-2 px-3 rounded text-left flex justify-between items-center">
+                            <span>transform: rotate(12deg);</span>
+                            <i id="icon-rotate" class="fa-regular fa-square text-gray-400"></i>
+                        </button>
+                        <button onclick="toggleStyle('scale-125', '', 'Perbesar')" class="text-xs bg-gray-100 hover:bg-gray-200 py-2 px-3 rounded text-left flex justify-between items-center">
+                            <span>transform: scale(1.25);</span>
+                            <i id="icon-scale" class="fa-regular fa-square text-gray-400"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-4 text-center">Klik tombol di atas untuk menerapkan CSS ke kotak.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- JAVASCRIPT SECTION -->
+        <section id="js" class="tab-content hidden transition-all-300">
+            <div class="border-b pb-4 mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">3. JavaScript pada Web</h2>
+                <p class="text-gray-600 mt-2">Membuat halaman web berinteraksi dengan pengguna (logika).</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Concept Card 1 -->
+                <div class="bg-white p-5 rounded-lg shadow-sm border-t-4 border-yellow-400">
+                    <h3 class="font-bold text-gray-800 mb-2">Variabel</h3>
+                    <p class="text-sm text-gray-600 mb-2">Tempat menyimpan data.</p>
+                    <code class="bg-gray-100 px-2 py-1 rounded text-xs block mb-1">let nama = "Budi";</code>
+                    <code class="bg-gray-100 px-2 py-1 rounded text-xs block">const pi = 3.14;</code>
+                </div>
+                <!-- Concept Card 2 -->
+                <div class="bg-white p-5 rounded-lg shadow-sm border-t-4 border-yellow-400">
+                    <h3 class="font-bold text-gray-800 mb-2">Fungsi</h3>
+                    <p class="text-sm text-gray-600 mb-2">Kumpulan perintah yang bisa dipanggil ulang.</p>
+                    <code class="bg-gray-100 px-2 py-1 rounded text-xs block">function sapa() { alert("Halo!"); }</code>
+                </div>
+                <!-- Concept Card 3 -->
+                <div class="bg-white p-5 rounded-lg shadow-sm border-t-4 border-yellow-400">
+                    <h3 class="font-bold text-gray-800 mb-2">DOM Manipulation</h3>
+                    <p class="text-sm text-gray-600 mb-2">Mengubah HTML/CSS lewat JS.</p>
+                    <code class="bg-gray-100 px-2 py-1 rounded text-xs block">document.getElementById("id").style.color = "red";</code>
+                </div>
+            </div>
+
+            <!-- JS Interactive Demo -->
+            <div class="mt-8 bg-gray-800 rounded-xl p-6 text-white flex flex-col md:flex-row items-center gap-8">
+                <div class="flex-1">
+                    <h3 class="text-xl font-bold mb-2"><i class="fa-brands fa-js text-yellow-400 mr-2"></i>Live Demo JavaScript</h3>
+                    <p class="text-gray-300 text-sm mb-4">
+                        Coba interaksi di bawah ini. JavaScript mendengarkan "Event" (seperti klik) dan mengubah tampilan halaman tanpa reload.
+                    </p>
+                    <div class="bg-gray-900 p-4 rounded font-mono text-xs text-green-400">
+                        <p>// Logic dibalik layar:</p>
+                        <p>let angka = <span id="code-val">0</span>;</p>
+                        <p>function tambah() {</p>
+                        <p>&nbsp;&nbsp;angka++;</p>
+                        <p>&nbsp;&nbsp;updateLayar();</p>
+                        <p>}</p>
+                    </div>
+                </div>
+                
+                <div class="flex-1 flex flex-col items-center justify-center bg-gray-700 p-8 rounded-lg w-full">
+                    <div class="text-5xl font-bold mb-6 font-mono" id="counter-display">0</div>
+                    <div class="flex gap-4">
+                        <button onclick="updateCounter(-1)" class="bg-red-500 hover:bg-red-600 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl transition transform hover:scale-110 shadow-lg">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+                        <button onclick="updateCounter(1)" class="bg-green-500 hover:bg-green-600 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl transition transform hover:scale-110 shadow-lg">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                    <button onclick="toggleDarkModeDemo()" class="mt-6 text-xs text-gray-300 underline hover:text-white">
+                        Ubah Warna Container (Toggle Class)
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Materi Tambahan -->
+            <div class="mt-10 pt-6 border-t">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Materi Tambahan Web Development</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 bg-white border rounded hover:shadow-md transition">
+                        <h4 class="font-bold text-purple-600">Responsive Design</h4>
+                        <p class="text-xs text-gray-600 mt-1">Teknik membuat web tampil bagus di HP, Tablet, dan Desktop (menggunakan Media Query).</p>
+                    </div>
+                    <div class="p-4 bg-white border rounded hover:shadow-md transition">
+                        <h4 class="font-bold text-purple-600">Frontend Frameworks</h4>
+                        <p class="text-xs text-gray-600 mt-1">Tools canggih seperti React, Vue, atau Angular untuk membuat aplikasi web kompleks lebih cepat.</p>
+                    </div>
+                    <div class="p-4 bg-white border rounded hover:shadow-md transition">
+                        <h4 class="font-bold text-purple-600">Backend & Database</h4>
+                        <p class="text-xs text-gray-600 mt-1">Sisi server (Node.js, PHP) dan penyimpanan data (MySQL, MongoDB) yang tidak terlihat user.</p>
+                    </div>
+                    <div class="p-4 bg-white border rounded hover:shadow-md transition">
+                        <h4 class="font-bold text-purple-600">Hosting & Domain</h4>
+                        <p class="text-xs text-gray-600 mt-1">Cara meng-online-kan website agar bisa diakses seluruh dunia.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ASSESSMENT SECTION -->
+        <section id="assessment" class="tab-content hidden transition-all-300">
+            <div class="border-b pb-4 mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Rangkuman, Soal & Praktikum</h2>
+                <p class="text-gray-600 mt-2">Uji pemahaman dan praktikkan keterampilanmu.</p>
+            </div>
+
+            <!-- Rangkuman Accordion -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-gray-800 mb-3">Rangkuman Materi</h3>
+                <div class="space-y-2">
+                    <details class="group bg-white rounded-lg shadow-sm border border-gray-200">
+                        <summary class="flex cursor-pointer items-center justify-between p-4 font-medium text-gray-900">
+                            <span>1. Apa itu Web Development?</span>
+                            <span class="transition group-open:rotate-180"><i class="fa-solid fa-chevron-down"></i></span>
+                        </summary>
+                        <div class="border-t border-gray-200 p-4 text-sm text-gray-600 bg-gray-50">
+                            Web Development adalah proses pembuatan dan pemeliharaan situs web. Terbagi menjadi Frontend (tampilan/klien) dan Backend (server/database). Tiga pilar utamanya adalah HTML (struktur), CSS (tampilan), dan JavaScript (interaksi).
+                        </div>
+                    </details>
+                    <details class="group bg-white rounded-lg shadow-sm border border-gray-200">
+                        <summary class="flex cursor-pointer items-center justify-between p-4 font-medium text-gray-900">
+                            <span>2. Peran Tools (VS Code & Github)</span>
+                            <span class="transition group-open:rotate-180"><i class="fa-solid fa-chevron-down"></i></span>
+                        </summary>
+                        <div class="border-t border-gray-200 p-4 text-sm text-gray-600 bg-gray-50">
+                            Visual Studio Code adalah editor kode tempat kita menulis program. Github adalah platform version control berbasis cloud untuk menyimpan riwayat kode dan berkolaborasi dengan tim.
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Essay Questions -->
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-3">Soal Essay (Latihan)</h3>
+                    <div class="space-y-4">
+                        <!-- Q1 -->
+                        <div class="bg-white p-4 rounded-lg shadow-sm border">
+                            <p class="font-bold text-sm mb-2">1. Jelaskan perbedaan mendasar antara HTML dan CSS!</p>
+                            <textarea class="w-full border p-2 rounded text-sm mb-2" placeholder="Ketik jawabanmu di sini untuk latihan..." rows="2"></textarea>
+                            <button onclick="toggleAnswer('ans1')" class="text-xs text-blue-600 hover:underline">Lihat Kunci Jawaban</button>
+                            <div id="ans1" class="hidden mt-2 p-2 bg-green-50 text-xs text-green-800 rounded border border-green-200">
+                                <strong>Jawaban:</strong> HTML (HyperText Markup Language) digunakan untuk membuat struktur dan konten halaman (seperti teks, gambar), sedangkan CSS (Cascading Style Sheets) digunakan untuk mengatur tampilan visual (seperti warna, font, layout) dari struktur tersebut.
+                            </div>
+                        </div>
+                        <!-- Q2 -->
+                        <div class="bg-white p-4 rounded-lg shadow-sm border">
+                            <p class="font-bold text-sm mb-2">2. Apa fungsi JavaScript dalam sebuah website?</p>
+                            <textarea class="w-full border p-2 rounded text-sm mb-2" placeholder="Ketik jawabanmu..." rows="2"></textarea>
+                            <button onclick="toggleAnswer('ans2')" class="text-xs text-blue-600 hover:underline">Lihat Kunci Jawaban</button>
+                            <div id="ans2" class="hidden mt-2 p-2 bg-green-50 text-xs text-green-800 rounded border border-green-200">
+                                <strong>Jawaban:</strong> JavaScript berfungsi untuk membuat halaman web menjadi interaktif dan dinamis. Contohnya: membuat animasi, memproses form, mengambil data dari server tanpa reload, dan merespons klik pengguna.
+                            </div>
+                        </div>
+                        <!-- Q3 -->
+                        <div class="bg-white p-4 rounded-lg shadow-sm border">
+                            <p class="font-bold text-sm mb-2">3. Mengapa kita perlu menggunakan Github?</p>
+                            <button onclick="toggleAnswer('ans3')" class="text-xs text-blue-600 hover:underline">Lihat Kunci Jawaban</button>
+                            <div id="ans3" class="hidden mt-2 p-2 bg-green-50 text-xs text-green-800 rounded border border-green-200">
+                                <strong>Jawaban:</strong> Untuk menyimpan kode secara cloud (backup), melacak perubahan kode (version control), dan memudahkan kolaborasi tim dalam satu proyek yang sama.
+                            </div>
+                        </div>
+                         <!-- Q4 -->
+                         <div class="bg-white p-4 rounded-lg shadow-sm border">
+                            <p class="font-bold text-sm mb-2">4. Sebutkan 3 ekstensi VS Code yang membantu web developer!</p>
+                            <button onclick="toggleAnswer('ans4')" class="text-xs text-blue-600 hover:underline">Lihat Kunci Jawaban</button>
+                            <div id="ans4" class="hidden mt-2 p-2 bg-green-50 text-xs text-green-800 rounded border border-green-200">
+                                <strong>Jawaban:</strong> 1. Live Server (untuk preview real-time), 2. Prettier (untuk merapikan format kode), 3. Auto Close Tag (untuk menutup tag HTML otomatis).
+                            </div>
+                        </div>
+                         <!-- Q5 -->
+                         <div class="bg-white p-4 rounded-lg shadow-sm border">
+                            <p class="font-bold text-sm mb-2">5. Apa yang dimaksud dengan Responsive Design?</p>
+                            <button onclick="toggleAnswer('ans5')" class="text-xs text-blue-600 hover:underline">Lihat Kunci Jawaban</button>
+                            <div id="ans5" class="hidden mt-2 p-2 bg-green-50 text-xs text-green-800 rounded border border-green-200">
+                                <strong>Jawaban:</strong> Responsive Design adalah pendekatan desain web yang membuat tampilan website dapat menyesuaikan diri secara otomatis dengan ukuran layar perangkat pengguna (HP, Tablet, Laptop) agar tetap mudah dibaca dan digunakan.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Praktikum / Mini Project -->
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-3">Praktikum: Membuat Portfolio Pribadi</h3>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-blue-200 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-blue-500 text-white text-xs px-2 py-1 rounded-bl">Tugas Akhir</div>
+                        <h4 class="font-bold mb-4">Instruksi Kerja:</h4>
+                        <ul class="space-y-3 text-sm text-gray-700">
+                            <li class="flex items-start">
+                                <input type="checkbox" class="mt-1 mr-2">
+                                <span>Buat folder proyek baru bernama <code>portfolio-saya</code>.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <input type="checkbox" class="mt-1 mr-2">
+                                <span>Buat file <code>index.html</code>. Gunakan tag <code>&lt;h1&gt;</code> untuk namamu dan <code>&lt;img&gt;</code> untuk fotomu.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <input type="checkbox" class="mt-1 mr-2">
+                                <span>Buat file <code>style.css</code>. Ubah warna background body dan font. Hubungkan ke HTML dengan <code>&lt;link&gt;</code>.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <input type="checkbox" class="mt-1 mr-2">
+                                <span>Tambahkan tombol "Hubungi Saya" yang ketika diklik memunculkan <code>alert('Terima kasih!')</code> menggunakan JavaScript.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <input type="checkbox" class="mt-1 mr-2">
+                                <span>Push proyek tersebut ke repository Github barumu.</span>
+                            </li>
+                        </ul>
+                        <div class="mt-6 bg-gray-50 p-3 rounded text-xs text-gray-500">
+                            <i class="fa-solid fa-circle-info mr-1"></i> Tunjukkan hasil repository Github kamu ke guru pembimbing untuk dinilai.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="mb-2">Modul Pembelajaran Informatika & Dasar TJKT Kelas 10</p>
+            <p class="text-xs text-gray-400">Dibuat untuk tujuan pendidikan SMK. &copy; 2023.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // 1. Navigation Logic
+        function switchTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
+            
+            // Show selected section
+            const selected = document.getElementById(tabId);
+            selected.classList.remove('hidden');
+            selected.classList.add('block'); // Ensure display block for visibility
+
+            // Update Nav State
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+                btn.classList.add('text-gray-600');
+                if(btn.dataset.target === tabId) {
+                    btn.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+                    btn.classList.remove('text-gray-600');
+                }
+            });
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+
+            // Redraw chart if dashboard is opened (fix chartjs sizing issues in hidden tabs)
+            if(tabId === 'dashboard' && window.techChart) {
+                window.techChart.resize();
+            }
+        }
+
+        // 2. CSS Playground Logic
+        function toggleStyle(className, removeClass, label) {
+            const box = document.getElementById('demo-box');
+            const classes = className.split(' ');
+            
+            // Check if first class is present to toggle
+            let isApplied = false;
+            classes.forEach(c => {
+                if(box.classList.contains(c)) isApplied = true;
+            });
+
+            if (isApplied) {
+                // Remove
+                classes.forEach(c => box.classList.remove(c));
+                if(removeClass) box.classList.add(removeClass); // Restore default if needed
+                
+                // Update icon
+                updateIcon(label, false);
+            } else {
+                // Add
+                if(removeClass) box.classList.remove(removeClass); // Remove conflict
+                classes.forEach(c => box.classList.add(c));
+                
+                // Update icon
+                updateIcon(label, true);
+            }
+        }
+
+        function updateIcon(label, isActive) {
+            let iconId = '';
+            if(label.includes('Biru')) iconId = 'icon-bg';
+            if(label.includes('Lingkaran')) iconId = 'icon-radius';
+            if(label.includes('Bayangan')) iconId = 'icon-shadow';
+            if(label.includes('Merah')) iconId = 'icon-border';
+            if(label.includes('Rotasi')) iconId = 'icon-rotate';
+            if(label.includes('Perbesar')) iconId = 'icon-scale';
+
+            if(iconId) {
+                const el = document.getElementById(iconId);
+                if(isActive) {
+                    el.classList.remove('fa-square');
+                    el.classList.add('fa-check-square', 'text-blue-500');
+                } else {
+                    el.classList.add('fa-square');
+                    el.classList.remove('fa-check-square', 'text-blue-500');
+                }
+            }
+        }
+
+        // 3. JS Demo Logic
+        let count = 0;
+        function updateCounter(val) {
+            count += val;
+            document.getElementById('counter-display').innerText = count;
+            document.getElementById('code-val').innerText = count;
+        }
+
+        function toggleDarkModeDemo() {
+            const container = document.getElementById('counter-display').parentElement;
+            container.classList.toggle('bg-gray-700');
+            container.classList.toggle('bg-indigo-900');
+        }
+
+        // 4. Assessment Logic
+        function toggleAnswer(id) {
+            document.getElementById(id).classList.toggle('hidden');
+        }
+
+        // 5. Chart Initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set Dashboard as active initially
+            switchTab('dashboard');
+
+            const ctx = document.getElementById('techUsageChart').getContext('2d');
+            
+            // Data representing global usage % of websites (illustrative based on W3Techs)
+            window.techChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['HTML (Struktur)', 'CSS (Tampilan)', 'JavaScript (Interaksi)'],
+                    datasets: [{
+                        label: '% Penggunaan di Web',
+                        data: [94.6, 96.0, 97.8], // Illustrative high percentages
+                        backgroundColor: [
+                            'rgba(234, 88, 12, 0.8)', // HTML Orange
+                            'rgba(37, 99, 235, 0.8)', // CSS Blue
+                            'rgba(234, 179, 8, 0.8)'  // JS Yellow
+                        ],
+                        borderColor: [
+                            'rgba(234, 88, 12, 1)',
+                            'rgba(37, 99, 235, 1)',
+                            'rgba(234, 179, 8, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.raw + '% dari semua website';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
