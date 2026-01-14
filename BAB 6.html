@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dasar Penggunaan Alat Ukur - TKJ Kelas 10</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tab.active {
+            border-bottom-color: #0284c7;
+            color: #0284c7;
+            font-weight: 600;
+        }
+        .tool-card.active {
+            border-color: #0284c7;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .led {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #d1d5db;
+            transition: background-color 0.3s;
+        }
+        .led.on {
+            background-color: #22c55e;
+            box-shadow: 0 0 10px #22c55e;
+        }
+        .quiz-option.selected {
+            background-color: #e0f2fe;
+            border-color: #0284c7;
+        }
+        .quiz-option.correct {
+            background-color: #dcfce7;
+            border-color: #22c55e;
+        }
+        .quiz-option.wrong {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+         @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <!-- Chosen Palette: Warm Neutrals with Sky Blue Accent -->
+    <!-- Application Structure Plan: The application is designed with a tab-based navigation system (Pengantar, Alat Ukur, Simulasi, Kuis) to segment the learning process into logical steps. This structure allows students to move from theoretical concepts to practical application and finally to self-assessment in a non-linear, exploratory manner. This is more engaging than a traditional linear document format. The 'Alat Ukur' section uses a card-based layout for quick scanning, with details revealed on interaction to avoid overwhelming the user. The 'Simulasi' section provides a safe, interactive environment to practice skills, which is crucial for kinesthetic learning in a technical field. This structure was chosen to maximize engagement and knowledge retention for 10th-grade vocational students. -->
+    <!-- Visualization & Content Choices: 
+    - Report Info: Types of Tools -> Goal: Organize/Inform -> Viz: Interactive Cards (HTML/CSS) -> Interaction: Click to reveal details -> Justification: Cleans up UI, allows self-paced exploration.
+    - Report Info: Multimeter Measurement Ranges -> Goal: Compare/Inform -> Viz: Bar Chart (Chart.js) -> Interaction: Static visualization for context -> Justification: Provides a visual comparison of voltage scales encountered in TKJ, making abstract numbers more concrete.
+    - Report Info: LAN Tester Results -> Goal: Organize/Inform -> Viz: HTML/CSS LED Diagram -> Interaction: Buttons to simulate cable states -> Justification: An interactive diagram is far more effective for learning light patterns than static images or text.
+    - Report Info: Knowledge Check -> Goal: Assess -> Viz: Interactive Quiz Form (HTML) -> Interaction: JS-based instant feedback -> Justification: Reinforces learning through active recall and immediate correction. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <div id="app" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <header class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900">Penggunaan Alat Ukur</h1>
+            <p class="mt-2 text-lg text-slate-600">Materi Dasar-Dasar Program Keahlian TKJ - Kelas 10</p>
+        </header>
+
+        <nav class="border-b border-slate-200 mb-8">
+            <ul class="flex flex-wrap -mb-px justify-center text-sm font-medium text-center text-slate-500">
+                <li class="mr-2">
+                    <button class="tab active inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-slate-600 hover:border-slate-300" data-tab="pengantar">Pengantar</button>
+                </li>
+                <li class="mr-2">
+                    <button class="tab inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-slate-600 hover:border-slate-300" data-tab="alat-ukur">Jenis Alat Ukur</button>
+                </li>
+                <li class="mr-2">
+                    <button class="tab inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-slate-600 hover:border-slate-300" data-tab="simulasi">Simulasi Praktik</button>
+                </li>
+                <li>
+                    <button class="tab inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-slate-600 hover:border-slate-300" data-tab="kuis">Kuis Pengetahuan</button>
+                </li>
+            </ul>
+        </nav>
+
+        <main>
+            <div id="pengantar" class="tab-content active animate-fade-in">
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-sky-700 mb-4">Mengapa Mengukur itu Penting?</h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Selamat datang di materi pembelajaran interaktif tentang alat ukur! Dalam dunia Teknik Komputer dan Jaringan (TKJ), kemampuan untuk mengukur besaran listrik dan memeriksa konektivitas jaringan adalah keterampilan dasar yang wajib dikuasai. Tanpa pengukuran yang akurat, kita akan kesulitan saat merakit PC, mendiagnosis masalah (troubleshooting), atau membangun sebuah jaringan yang andal.
+                    </p>
+                    <p class="text-slate-600 leading-relaxed">
+                        Di modul ini, Anda akan diperkenalkan dengan alat-alat ukur paling umum yang digunakan oleh teknisi TKJ, belajar fungsi dan cara kerjanya, hingga mencoba simulasi praktik virtual. Mari kita mulai perjalanan Anda untuk menjadi teknisi yang kompeten!
+                    </p>
+                    <div class="mt-6 p-6 bg-sky-50 border border-sky-200 rounded-lg">
+                        <h3 class="font-semibold text-sky-800">Tujuan Pembelajaran:</h3>
+                        <ul class="list-disc list-inside mt-2 text-slate-600 space-y-1">
+                            <li>Memahami fungsi berbagai jenis alat ukur di bidang TKJ.</li>
+                            <li>Mampu menggunakan Multimeter untuk mengukur tegangan, hambatan, dan arus.</li>
+                            <li>Mampu menggunakan LAN Tester untuk memeriksa kondisi kabel jaringan.</li>
+                            <li>Mengidentifikasi masalah umum berdasarkan hasil pengukuran.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="alat-ukur" class="tab-content animate-fade-in">
+                 <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-slate-900">Kenali Peralatanmu</h2>
+                    <p class="mt-2 text-slate-600">Klik pada setiap alat untuk melihat deskripsi, fungsi, dan cara penggunaannya. Ini adalah peralatan dasar yang akan sering Anda temui di laboratorium atau di dunia kerja.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="tool-grid">
+                </div>
+                 <div id="tool-detail-container" class="mt-8"></div>
+            </div>
+
+            <div id="simulasi" class="tab-content animate-fade-in">
+                 <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-slate-900">Praktik Tanpa Risiko</h2>
+                    <p class="mt-2 text-slate-600">Gunakan simulasi interaktif di bawah ini untuk mengasah keterampilan Anda dalam menggunakan alat ukur. Pilih skenario dan coba lakukan pengukuran seperti di dunia nyata.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-sky-700 mb-4">Simulasi Multimeter Digital</h3>
+                        <div id="multimeter-sim">
+                            <p class="text-sm text-slate-500 mb-2">Skenario:</p>
+                            <select id="mm-scenario" class="w-full p-2 border border-slate-300 rounded-md mb-4">
+                                <option value="battery">Ukur Tegangan Baterai 9V</option>
+                                <option value="psu">Ukur Tegangan 5V dari Power Supply PC</option>
+                                <option value="resistor">Ukur Hambatan Resistor 1k Ohm</option>
+                            </select>
+                            
+                            <div class="bg-slate-700 text-white p-4 rounded-lg text-center mb-4">
+                                <p class="text-sm text-slate-300">Display Multimeter</p>
+                                <p id="mm-display" class="text-4xl font-mono">0.00</p>
+                            </div>
+                            
+                             <div class="grid grid-cols-2 gap-4">
+                                 <div>
+                                    <label for="mm-function" class="block text-sm font-medium text-slate-700">Pilih Fungsi:</label>
+                                    <select id="mm-function" class="w-full mt-1 p-2 border border-slate-300 rounded-md">
+                                        <option value="off">OFF</option>
+                                        <option value="dcv">V DC (直流)</option>
+                                        <option value="acv">V AC (交流)</option>
+                                        <option value="ohm">Ω (Ohm)</option>
+                                    </select>
+                                 </div>
+                                  <div>
+                                    <label for="mm-range" class="block text-sm font-medium text-slate-700">Pilih Skala:</label>
+                                    <select id="mm-range" class="w-full mt-1 p-2 border border-slate-300 rounded-md">
+                                        <option value="auto">Auto</option>
+                                        <option value="200m">200m</option>
+                                        <option value="2">2</option>
+                                        <option value="20">20</option>
+                                        <option value="200">200</option>
+                                        <option value="1000">1000</option>
+                                        <option value="2k">2k</option>
+                                        <option value="20k">20k</option>
+                                    </select>
+                                 </div>
+                            </div>
+
+                            <button id="measure-btn" class="w-full bg-sky-600 text-white font-bold py-2 px-4 rounded-md hover:bg-sky-700 transition mt-4">Lakukan Pengukuran</button>
+                            <p id="mm-feedback" class="mt-3 text-center font-medium"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-sky-700 mb-4">Simulasi LAN Tester</h3>
+                        <p class="text-slate-600 mb-4">Pilih kondisi kabel untuk melihat indikator lampu pada LAN Tester.</p>
+                        <div id="lan-tester-sim" class="flex justify-around items-center bg-slate-100 p-4 rounded-lg">
+                            <div>
+                                <p class="font-semibold text-center mb-2">Transmitter</p>
+                                <div id="lan-tx" class="grid grid-cols-2 gap-2"></div>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-center mb-2">Receiver</p>
+                                <div id="lan-rx" class="grid grid-cols-2 gap-2"></div>
+                            </div>
+                        </div>
+                        <div class="mt-4 grid grid-cols-2 gap-2">
+                             <button class="cable-state-btn bg-slate-200 p-2 rounded-md hover:bg-slate-300" data-state="good">Kabel Baik (Straight)</button>
+                             <button class="cable-state-btn bg-slate-200 p-2 rounded-md hover:bg-slate-300" data-state="cross">Kabel Cross</button>
+                             <button class="cable-state-btn bg-slate-200 p-2 rounded-md hover:bg-slate-300" data-state="open">Kabel Putus (Open)</button>
+                             <button class="cable-state-btn bg-slate-200 p-2 rounded-md hover:bg-slate-300" data-state="short">Kabel Korslet (Short)</button>
+                        </div>
+                         <p id="lan-feedback" class="mt-3 text-center font-medium h-10"></p>
+                    </div>
+                </div>
+                 <div class="bg-white p-8 rounded-lg shadow-md mt-8">
+                    <h2 class="text-2xl font-bold text-sky-700 mb-4">Visualisasi Rentang Pengukuran</h2>
+                    <p class="text-slate-600 mb-4">Grafik ini menunjukkan perkiraan nilai tegangan DC yang umum diukur pada komponen komputer. Ini membantu Anda memilih skala yang tepat pada multimeter untuk menghindari kerusakan alat atau hasil yang tidak akurat.</p>
+                    <div class="chart-container">
+                        <canvas id="measurementChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="kuis" class="tab-content animate-fade-in">
+                 <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-slate-900">Uji Pemahamanmu!</h2>
+                    <p class="mt-2 text-slate-600">Jawab pertanyaan-pertanyaan berikut untuk mengukur sejauh mana pemahaman Anda tentang materi yang telah dipelajari. Pilih jawaban yang menurut Anda paling tepat.</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+                    <div id="quiz-container"></div>
+                    <div class="mt-6 flex justify-between items-center">
+                        <button id="submit-quiz-btn" class="bg-sky-600 text-white font-bold py-2 px-6 rounded-md hover:bg-sky-700 transition">Periksa Jawaban</button>
+                        <p id="quiz-result" class="text-lg font-bold"></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const toolGrid = document.getElementById('tool-grid');
+            const toolDetailContainer = document.getElementById('tool-detail-container');
+
+            const toolsData = [
+                {
+                    id: 'multimeter',
+                    name: 'Multimeter',
+                    icon: '⚡️',
+                    shortDesc: 'Alat serbaguna untuk mengukur tegangan (Volt), arus (Ampere), dan hambatan (Ohm).',
+                    detail: {
+                        description: 'Multimeter, atau sering disebut AVO-meter (Ampere, Volt, Ohm), adalah alat ukur listrik yang paling fundamental. Terdapat dua jenis utama: Analog (dengan jarum penunjuk) dan Digital (dengan layar LCD). Untuk pemula, multimeter digital lebih mudah dibaca dan lebih akurat.',
+                        functions: [
+                            '<strong>Voltmeter:</strong> Mengukur besar tegangan listrik (AC/DC).',
+                            '<strong>Ammeter:</strong> Mengukur kuat arus listrik (AC/DC).',
+                            '<strong>Ohmmeter:</strong> Mengukur nilai hambatan/resistansi.',
+                            '<strong>Buzzer Test:</strong> Memeriksa kontinuitas atau apakah sebuah kabel tersambung dengan baik.'
+                        ],
+                        usage: [
+                            'Pilih fungsi yang sesuai (misal VDC untuk tegangan DC).',
+                            'Pilih skala (range) yang lebih tinggi dari nilai yang diperkirakan.',
+                            'Hubungkan probe hitam (-) ke port COM dan probe merah (+) ke port VΩmA.',
+                            'Tempelkan probe ke titik yang akan diukur. Baca hasilnya di layar.',
+                            '<strong>PENTING:</strong> Jangan pernah mengukur hambatan pada rangkaian yang masih memiliki tegangan!'
+                        ]
+                    }
+                },
+                {
+                    id: 'lan-tester',
+                    name: 'LAN Tester',
+                    icon: '↔️',
+                    shortDesc: 'Alat untuk memeriksa konektivitas dan urutan kabel pada jaringan LAN.',
+                    detail: {
+                        description: 'LAN Tester adalah alat yang wajib dimiliki saat memasang atau memperbaiki jaringan kabel. Alat ini terdiri dari dua bagian: unit utama (transmitter) dan unit remote (receiver). Fungsinya adalah untuk memastikan setiap pin pada konektor RJ45 tersambung dengan benar ke pin yang sesuai di ujung lainnya.',
+                        functions: [
+                            'Memeriksa kabel tipe Straight-through dan Crossover.',
+                            'Mendeteksi adanya kabel putus (Open Circuit).',
+                            'Mendeteksi adanya kabel yang terhubung singkat (Short Circuit).',
+                            'Mendeteksi urutan pin yang salah (Miss-wire).'
+                        ],
+                        usage: [
+                            'Pasang salah satu ujung kabel ke port RJ45 di unit utama.',
+                            'Pasang ujung kabel lainnya ke port RJ45 di unit remote.',
+                            'Nyalakan LAN tester.',
+                            'Perhatikan urutan lampu LED yang menyala. Jika menyala berurutan dari 1-8 di kedua unit, berarti kabel dalam kondisi baik (untuk tipe straight).'
+                        ]
+                    }
+                },
+                {
+                    id: 'crimping-tool',
+                    name: 'Crimping Tool',
+                    icon: '🛠️',
+                    shortDesc: 'Alat untuk memasang konektor RJ45 atau RJ11 ke ujung kabel UTP.',
+                    detail: {
+                        description: 'Meskipun bukan alat ukur, Crimping Tool adalah pasangan tak terpisahkan dari LAN Tester. Alat ini digunakan untuk "mengunci" pin-pin konektor RJ45 ke kabel tembaga di dalam kabel UTP. Kualitas crimping sangat menentukan kualitas koneksi jaringan.',
+                        functions: [
+                            '<strong>Crimper:</strong> Menekan dan mengunci konektor RJ45/RJ11.',
+                            '<strong>Cutter:</strong> Memotong kabel.',
+                            '<strong>Stripper:</strong> Mengupas kulit luar kabel UTP tanpa merusak kabel di dalamnya.'
+                        ],
+                        usage: [
+                            'Kupas kulit luar kabel UTP sekitar 2 cm.',
+                            'Susun 8 kabel kecil sesuai urutan standar (T568A atau T568B).',
+                            'Ratakan dan potong ujung kabel agar sama panjang.',
+                            'Masukkan kabel ke konektor RJ45 hingga ujungnya menyentuh bagian dalam.',
+                            'Masukkan konektor ke lubang crimper yang sesuai, lalu tekan dengan kuat.'
+                        ]
+                    }
+                }
+            ];
+
+            const quizData = [
+                {
+                    question: "Untuk mengukur tegangan baterai pada laptop, fungsi apa yang harus dipilih pada multimeter?",
+                    options: ["V AC", "Ohm (Ω)", "Ampere", "V DC"],
+                    answer: "V DC"
+                },
+                {
+                    question: "Pada LAN Tester, jika lampu 1, 2, 3, 4, 5, 6, 7, 8 menyala berurutan di kedua unit, artinya...",
+                    options: ["Kabel putus", "Kabel tipe cross", "Kabel dalam kondisi baik (straight)", "Terjadi korsleting"],
+                    answer: "Kabel dalam kondisi baik (straight)"
+                },
+                {
+                    question: "Alat yang berfungsi untuk memasang konektor RJ45 ke kabel UTP disebut...",
+                    options: ["LAN Tester", "Multimeter", "Tone Generator", "Crimping Tool"],
+                    answer: "Crimping Tool"
+                },
+                 {
+                    question: "Saat akan mengukur tegangan 220V dari stop kontak, skala Voltmeter AC (VAC) yang paling aman untuk dipilih pertama kali adalah...",
+                    options: ["200V", "750V atau 1000V", "20V", "2V"],
+                    answer: "750V atau 1000V"
+                }
+            ];
+
+            function switchTab(tabId) {
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                tabs.forEach(tab => {
+                    tab.classList.remove('active');
+                });
+
+                document.getElementById(tabId).classList.add('active');
+                document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+            }
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    switchTab(tab.dataset.tab);
+                });
+            });
+
+            function renderTools() {
+                toolGrid.innerHTML = '';
+                toolsData.forEach(tool => {
+                    const card = document.createElement('div');
+                    card.className = 'tool-card bg-white p-6 rounded-lg shadow-md border-2 border-transparent cursor-pointer hover:shadow-lg hover:border-sky-500 transition';
+                    card.dataset.toolId = tool.id;
+                    card.innerHTML = `
+                        <div class="flex items-center mb-3">
+                            <span class="text-3xl mr-4">${tool.icon}</span>
+                            <h3 class="text-xl font-bold text-slate-800">${tool.name}</h3>
+                        </div>
+                        <p class="text-slate-600">${tool.shortDesc}</p>
+                    `;
+                    card.addEventListener('click', () => {
+                        renderToolDetail(tool.id);
+                        document.querySelectorAll('.tool-card').forEach(c => c.classList.remove('active'));
+                        card.classList.add('active');
+                    });
+                    toolGrid.appendChild(card);
+                });
+            }
+
+            function renderToolDetail(toolId) {
+                const tool = toolsData.find(t => t.id === toolId);
+                if (!tool) return;
+                
+                toolDetailContainer.innerHTML = `
+                <div class="bg-white p-8 rounded-lg shadow-lg animate-fade-in">
+                    <h3 class="text-2xl font-bold text-sky-700 mb-4">${tool.name}</h3>
+                    <p class="text-slate-600 leading-relaxed mb-6">${tool.detail.description}</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-slate-50 p-4 rounded-md">
+                            <h4 class="font-semibold text-slate-700 mb-2">Fungsi Utama:</h4>
+                            <ul class="space-y-2 text-slate-600">
+                                ${tool.detail.functions.map(f => `<li class="flex items-start"><span class="text-sky-500 mr-2 mt-1">✓</span><span>${f}</span></li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-md">
+                            <h4 class="font-semibold text-slate-700 mb-2">Langkah Penggunaan Dasar:</h4>
+                             <ol class="space-y-2 text-slate-600 list-decimal list-inside">
+                                ${tool.detail.usage.map(u => `<li>${u}</li>`).join('')}
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                `;
+                 toolDetailContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            function initMultimeterSim() {
+                const scenarioSelect = document.getElementById('mm-scenario');
+                const functionSelect = document.getElementById('mm-function');
+                const rangeSelect = document.getElementById('mm-range');
+                const display = document.getElementById('mm-display');
+                const feedback = document.getElementById('mm-feedback');
+                const measureBtn = document.getElementById('measure-btn');
+
+                const scenarios = {
+                    battery: { name: "Baterai 9V", type: "dcv", value: 9.12, correctRange: "20" },
+                    psu: { name: "Power Supply 5V", type: "dcv", value: 5.08, correctRange: "20" },
+                    resistor: { name: "Resistor 1k Ohm", type: "ohm", value: 0.99, correctRange: "2k" }
+                };
+
+                measureBtn.addEventListener('click', () => {
+                    const currentScenario = scenarios[scenarioSelect.value];
+                    const selectedFunc = functionSelect.value;
+                    const selectedRange = rangeSelect.value;
+                    
+                    feedback.classList.remove('text-green-600', 'text-red-600');
+
+                    if(selectedFunc !== currentScenario.type) {
+                        display.innerText = "Error";
+                        feedback.innerText = `Fungsi salah! Seharusnya menggunakan ${currentScenario.type.toUpperCase()}.`;
+                        feedback.classList.add('text-red-600');
+                    } else if (selectedRange !== currentScenario.correctRange) {
+                        display.innerText = "OL";
+                        feedback.innerText = `Skala tidak tepat! Coba gunakan skala ${currentScenario.correctRange}.`;
+                        feedback.classList.add('text-red-600');
+                    } else {
+                        display.innerText = currentScenario.value.toFixed(2);
+                        feedback.innerText = "Pengukuran berhasil dan akurat!";
+                        feedback.classList.add('text-green-600');
+                    }
+                });
+            }
+
+            function initLanTesterSim() {
+                const txLeds = document.getElementById('lan-tx');
+                const rxLeds = document.getElementById('lan-rx');
+                const buttons = document.querySelectorAll('.cable-state-btn');
+                const feedback = document.getElementById('lan-feedback');
+
+                for (let i = 1; i <= 8; i++) {
+                    txLeds.innerHTML += `<div class="led" data-pin="${i}">${i}</div>`;
+                    rxLeds.innerHTML += `<div class="led" data-pin="${i}">${i}</div>`;
+                }
+
+                const states = {
+                    good: { sequence: [1,2,3,4,5,6,7,8], text: "Kabel Baik (Straight): Lampu menyala berurutan 1-8." },
+                    cross: { sequence: [3,6,1,4,5,2,7,8], text: "Kabel Cross: Urutan pin 1&2 bertukar dengan 3&6." },
+                    open: { sequence: [1,2,0,4,5,6,7,8], text: "Kabel Putus (Open): Lampu pada pin 3 tidak menyala." },
+                    short: { sequence: [1,2,2,4,5,6,7,8], text: "Kabel Korslet (Short): Lampu pin 2 & 3 menyala bersamaan." }
+                };
+                let interval;
+
+                function runTest(state) {
+                    clearInterval(interval);
+                    feedback.textContent = states[state].text;
+                    let currentPin = 0;
+                    
+                    interval = setInterval(() => {
+                        document.querySelectorAll('#lan-tx .led, #lan-rx .led').forEach(led => led.classList.remove('on'));
+                        
+                        const txPin = currentPin + 1;
+                        const rxPin = states[state].sequence[currentPin];
+
+                        if (txPin > 0) {
+                            const txLed = txLeds.querySelector(`[data-pin="${txPin}"]`);
+                            if(txLed) txLed.classList.add('on');
+                        }
+                        if (rxPin > 0) {
+                             const rxLed = rxLeds.querySelector(`[data-pin="${rxPin}"]`);
+                            if(rxLed) rxLed.classList.add('on');
+                        }
+
+                        currentPin = (currentPin + 1) % 8;
+                    }, 400);
+                }
+
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        runTest(btn.dataset.state);
+                    });
+                });
+                
+                runTest('good');
+            }
+
+            function renderQuiz() {
+                const quizContainer = document.getElementById('quiz-container');
+                quizContainer.innerHTML = '';
+                quizData.forEach((item, index) => {
+                    const questionEl = document.createElement('div');
+                    questionEl.className = 'mb-6';
+                    questionEl.innerHTML = `
+                        <p class="font-semibold mb-3">${index + 1}. ${item.question}</p>
+                        <div class="space-y-2 quiz-options" data-qindex="${index}">
+                            ${item.options.map(option => `
+                                <label class="quiz-option block p-3 border-2 border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100">
+                                    <input type="radio" name="question${index}" value="${option}" class="mr-2 hidden">
+                                    <span>${option}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    `;
+                    quizContainer.appendChild(questionEl);
+                });
+
+                document.querySelectorAll('.quiz-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        const qIndex = e.currentTarget.parentElement.dataset.qindex;
+                        document.querySelectorAll(`[data-qindex="${qIndex}"] .quiz-option`).forEach(o => o.classList.remove('selected'));
+                        e.currentTarget.classList.add('selected');
+                        e.currentTarget.querySelector('input').checked = true;
+                    });
+                });
+            }
+
+            function submitQuiz() {
+                let score = 0;
+                quizData.forEach((item, index) => {
+                    const optionsContainer = document.querySelector(`[data-qindex="${index}"]`);
+                    const selected = optionsContainer.querySelector('input:checked');
+                    optionsContainer.querySelectorAll('.quiz-option').forEach(o => {
+                        o.classList.remove('selected');
+                        const inputValue = o.querySelector('input').value;
+                        if (inputValue === item.answer) {
+                            o.classList.add('correct');
+                        }
+                    });
+
+                    if (selected) {
+                         const selectedLabel = selected.parentElement;
+                        if (selected.value === item.answer) {
+                            score++;
+                        } else {
+                            selectedLabel.classList.add('wrong');
+                        }
+                    }
+                });
+                const resultText = document.getElementById('quiz-result');
+                resultText.textContent = `Skor Anda: ${score} dari ${quizData.length}`;
+            }
+
+            document.getElementById('submit-quiz-btn').addEventListener('click', submitQuiz);
+
+            function createChart() {
+                const ctx = document.getElementById('measurementChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Baterai CMOS', 'RAM', 'USB Port', 'Molex/SATA Power', 'ATX Main Power', 'CPU Power'],
+                        datasets: [{
+                            label: 'Tegangan DC Umum (Volt)',
+                            data: [3.3, 1.2, 5, 12, 3.3, 12],
+                            backgroundColor: [
+                                'rgba(56, 189, 248, 0.6)',
+                                'rgba(251, 146, 60, 0.6)',
+                                'rgba(239, 68, 68, 0.6)',
+                                'rgba(253, 224, 71, 0.6)',
+                                'rgba(34, 197, 94, 0.6)',
+                                'rgba(168, 85, 247, 0.6)',
+                            ],
+                            borderColor: [
+                               'rgba(56, 189, 248, 1)',
+                                'rgba(251, 146, 60, 1)',
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(253, 224, 71, 1)',
+                                'rgba(34, 197, 94, 1)',
+                                'rgba(168, 85, 247, 1)',
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Tegangan (Volt)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: ${context.raw}V`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            renderTools();
+            initMultimeterSim();
+            initLanTesterSim();
+            renderQuiz();
+            createChart();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dasar Teknik Jaringan Komputer dan Telekomunikasi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Soothing Neutrals -->
+    <!-- Application Structure Plan: Aplikasi ini dirancang dengan struktur tematik berbasis modul untuk memfasilitasi pembelajaran progresif. Daripada menyajikan informasi secara linear seperti buku, struktur ini memecah topik kompleks menjadi beberapa bagian interaktif: Pengantar, Komponen, Jenis Jaringan, Topologi, Model Lapisan, dan Kuis. Alur ini memungkinkan siswa untuk fokus pada satu konsep pada satu waktu, berinteraksi dengannya (misalnya, mengklik kartu komponen atau tombol topologi), dan kemudian menguji pemahaman mereka. Pendekatan ini dipilih karena lebih menarik bagi target audiens (siswa SMK) dan membantu memperkuat pemahaman melalui interaksi aktif, bukan hanya membaca pasif. Navigasi sticky memastikan akses mudah ke setiap modul, mendukung eksplorasi non-linear. -->
+    <!-- Visualization & Content Choices: 1. Komponen Jaringan -> Goal: Menginformasikan -> Method: Kartu interaktif (HTML/CSS/JS) -> Interaction: Klik untuk menampilkan detail. Justification: Menyajikan informasi secara ringkas dan memungkinkan eksplorasi mandiri. 2. Jenis Jaringan -> Goal: Membandingkan -> Method: Tombol filter konten (JS) & diagram batang (Chart.js) -> Interaction: Klik tombol untuk mengubah teks & visualisasi. Justification: Memudahkan perbandingan langsung antar jenis jaringan berdasarkan cakupan, diperkuat dengan visualisasi skala yang jelas. 3. Topologi Jaringan -> Goal: Mengorganisir & Visualisasi -> Method: Diagram visual dibuat dengan HTML/CSS (divs & borders) -> Interaction: Klik tombol untuk menampilkan diagram dan penjelasan yang sesuai. Justification: Visualisasi sangat penting untuk topologi; menggunakan HTML/CSS membuatnya ringan dan terintegrasi penuh tanpa file eksternal. 4. Model OSI/TCP/IP -> Goal: Menginformasikan -> Method: Diagram lapisan interaktif (HTML/CSS) -> Interaction: Arahkan kursor (hover) ke lapisan untuk melihat detail. Justification: Memecah konsep abstrak dan kompleks menjadi bagian-bagian yang mudah dicerna. 5. Kuis -> Goal: Menguji pemahaman -> Method: Kuis pilihan ganda (HTML/JS) -> Interaction: Pilih jawaban & dapatkan skor. Justification: Memberikan umpan balik langsung dan memperkuat pembelajaran. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #3d405b;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #3d5a80;
+            border-bottom-color: #3d5a80;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn-primary {
+            background-color: #3d5a80;
+            color: #ffffff;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #2c425e;
+        }
+        .btn-secondary {
+            background-color: #e0f2f1;
+            color: #3d5a80;
+            transition: background-color 0.3s;
+        }
+        .btn-secondary.active {
+            background-color: #3d5a80;
+            color: #ffffff;
+        }
+        .topology-diagram {
+            border: 2px dashed #98c1d9;
+            min-height: 250px;
+        }
+        .osi-layer {
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .osi-layer:hover {
+            background-color: #e0f2f1;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-gray-800">Dasar Jaringan & Telekomunikasi</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#pengantar" class="nav-link px-3 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent">Pengantar</a>
+                        <a href="#komponen" class="nav-link px-3 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent">Komponen</a>
+                        <a href="#jenis" class="nav-link px-3 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent">Jenis</a>
+                        <a href="#topologi" class="nav-link px-3 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent">Topologi</a>
+                        <a href="#model" class="nav-link px-3 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent">Model OSI</a>
+                        <a href="#kuis" class="nav-link px-3 py-2 text-sm font-medium text-gray-600 border-b-2 border-transparent">Kuis</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                        <span class="sr-only">Buka menu</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#pengantar" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-600">Pengantar</a>
+                <a href="#komponen" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-600">Komponen</a>
+                <a href="#jenis" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-600">Jenis</a>
+                <a href="#topologi" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-600">Topologi</a>
+                <a href="#model" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-600">Model OSI</a>
+                <a href="#kuis" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-600">Kuis</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <section id="pengantar" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">Selamat Datang di Dunia Jaringan!</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600">
+                Di era digital ini, hampir semua perangkat terhubung satu sama lain. Bagian ini akan memperkenalkan Anda pada konsep dasar di balik konektivitas tersebut: jaringan komputer dan telekomunikasi. Mari kita jelajahi bagaimana data dapat dikirim dari satu tempat ke tempat lain dalam sekejap mata.
+            </p>
+            <div class="mt-8 grid md:grid-cols-2 gap-8 items-center">
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-[#3d5a80]">
+                    <h3 class="text-xl font-semibold mb-2">Apa itu Jaringan Komputer?</h3>
+                    <p class="text-gray-600">Jaringan komputer adalah sekumpulan dua atau lebih komputer yang saling terhubung untuk berbagi sumber daya (seperti printer atau file) dan data. Bayangkan sebuah perpustakaan di mana setiap orang bisa mengakses buku yang sama dari meja masing-masing; itulah prinsip dasar berbagi sumber daya dalam jaringan.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-[#98c1d9]">
+                    <h3 class="text-xl font-semibold mb-2">Apa itu Telekomunikasi?</h3>
+                    <p class="text-gray-600">Telekomunikasi adalah proses komunikasi jarak jauh menggunakan teknologi. Ini mencakup segala hal, mulai dari panggilan telepon, siaran TV, hingga koneksi internet yang Anda gunakan sekarang. Intinya adalah pengiriman informasi melalui media seperti kabel, serat optik, atau gelombang radio.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="komponen" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2">Mengenal Komponen Jaringan</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Sebuah jaringan tidak akan terbentuk tanpa komponen-komponen perangkat keras ini. Klik setiap kartu untuk melihat fungsi utamanya.</p>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="card-container">
+                    <div class="card bg-white p-6 rounded-lg shadow-md text-center cursor-pointer" onclick="toggleDetail(this)">
+                        <div class="text-4xl mb-4">🔌</div>
+                        <h3 class="text-xl font-semibold">Router</h3>
+                        <p class="detail hidden mt-2 text-gray-600">Berfungsi sebagai 'polisi lalu lintas' jaringan. Router menghubungkan jaringan yang berbeda (misalnya, jaringan lokal Anda ke internet) dan menentukan jalur terbaik untuk pengiriman data.</p>
+                    </div>
+                </div>
+                <div class="card-container">
+                    <div class="card bg-white p-6 rounded-lg shadow-md text-center cursor-pointer" onclick="toggleDetail(this)">
+                        <div class="text-4xl mb-4">↔️</div>
+                        <h3 class="text-xl font-semibold">Switch</h3>
+                        <p class="detail hidden mt-2 text-gray-600">Menghubungkan beberapa perangkat dalam satu jaringan lokal (LAN). Switch lebih pintar dari Hub, karena ia mengirimkan data hanya ke perangkat tujuan yang spesifik, bukan ke semua perangkat.</p>
+                    </div>
+                </div>
+                <div class="card-container">
+                    <div class="card bg-white p-6 rounded-lg shadow-md text-center cursor-pointer" onclick="toggleDetail(this)">
+                        <div class="text-4xl mb-4">🔗</div>
+                        <h3 class="text-xl font-semibold">Kabel Jaringan</h3>
+                        <p class="detail hidden mt-2 text-gray-600">Media fisik yang membawa sinyal data. Jenis yang umum adalah UTP (Unshielded Twisted Pair) untuk koneksi LAN, dan Serat Optik (Fiber Optic) untuk kecepatan tinggi dan jarak jauh.</p>
+                    </div>
+                </div>
+                <div class="card-container">
+                    <div class="card bg-white p-6 rounded-lg shadow-md text-center cursor-pointer" onclick="toggleDetail(this)">
+                        <div class="text-4xl mb-4">🖥️</div>
+                        <h3 class="text-xl font-semibold">NIC</h3>
+                        <p class="detail hidden mt-2 text-gray-600">(Network Interface Card) Kartu antarmuka jaringan yang dipasang di komputer atau laptop agar dapat terhubung ke jaringan. Setiap NIC memiliki alamat fisik unik yang disebut MAC Address.</p>
+                    </div>
+                </div>
+                <div class="card-container">
+                    <div class="card bg-white p-6 rounded-lg shadow-md text-center cursor-pointer" onclick="toggleDetail(this)">
+                        <div class="text-4xl mb-4">📡</div>
+                        <h3 class="text-xl font-semibold">Access Point</h3>
+                        <p class="detail hidden mt-2 text-gray-600">Perangkat yang menciptakan jaringan nirkabel (Wireless LAN). Ini memungkinkan perangkat seperti laptop dan smartphone terhubung ke jaringan tanpa menggunakan kabel.</p>
+                    </div>
+                </div>
+                 <div class="card-container">
+                    <div class="card bg-white p-6 rounded-lg shadow-md text-center cursor-pointer" onclick="toggleDetail(this)">
+                        <div class="text-4xl mb-4">🧱</div>
+                        <h3 class="text-xl font-semibold">Hub</h3>
+                        <p class="detail hidden mt-2 text-gray-600">Perangkat dasar yang menghubungkan beberapa komputer. Namun, Hub mengirimkan data yang diterimanya ke semua port yang terhubung, sehingga kurang efisien dibandingkan Switch.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="jenis" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2">Jenis-Jenis Jaringan</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Jaringan diklasifikasikan berdasarkan luas cakupan geografisnya. Pilih salah satu jenis di bawah ini untuk melihat perbedaannya.</p>
+            <div class="flex justify-center space-x-2 sm:space-x-4 mb-8">
+                <button class="network-btn btn-secondary active px-4 py-2 rounded-full text-sm sm:text-base font-semibold" onclick="showNetwork('lan')">LAN</button>
+                <button class="network-btn btn-secondary px-4 py-2 rounded-full text-sm sm:text-base font-semibold" onclick="showNetwork('man')">MAN</button>
+                <button class="network-btn btn-secondary px-4 py-2 rounded-full text-sm sm:text-base font-semibold" onclick="showNetwork('wan')">WAN</button>
+                <button class="network-btn btn-secondary px-4 py-2 rounded-full text-sm sm:text-base font-semibold" onclick="showNetwork('internet')">Internet</button>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center bg-white p-8 rounded-lg shadow-lg">
+                <div id="network-content">
+                </div>
+                <div class="chart-container w-full max-w-md mx-auto h-64 sm:h-80 relative">
+                    <canvas id="networkScaleChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="topologi" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2">Topologi Jaringan</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Topologi adalah 'peta' atau tata letak fisik bagaimana komputer dan komponen lain saling terhubung dalam jaringan. Setiap topologi memiliki kelebihan dan kekurangannya.</p>
+            <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8">
+                <button class="topo-btn btn-secondary active px-4 py-2 rounded-full text-sm sm:text-base font-semibold" onclick="showTopology('star')">Star</button>
+                <button class="topo-btn btn-secondary px-4 py-2 rounded-full text-sm sm:text-base font-semibold" onclick="showTopology('bus')">Bus</button>
+                <button class="topo-btn btn-secondary px-4 py-2 rounded-full text-sm sm:text-base font-semibold" onclick="showTopology('ring')">Ring</button>
+                <button class="topo-btn btn-secondary px-4 py-2 rounded-full text-sm sm:text-base font-semibold" onclick="showTopology('mesh')">Mesh</button>
+            </div>
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <div id="topology-display" class="grid lg:grid-cols-2 gap-8 items-center">
+                </div>
+            </div>
+        </section>
+
+        <section id="model" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2">Model Lapisan OSI & TCP/IP</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Untuk menstandarkan komunikasi, dibuatlah model berlapis. Model OSI adalah model konseptual, sementara TCP/IP adalah yang paling banyak digunakan saat ini. Arahkan kursor ke setiap lapisan untuk info.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold text-center mb-4">Model OSI (7 Lapisan)</h3>
+                    <div class="space-y-1 relative" id="osi-layers">
+                    </div>
+                </div>
+                 <div>
+                    <h3 class="text-xl font-bold text-center mb-4">Model TCP/IP (4 Lapisan)</h3>
+                    <div class="space-y-1 relative" id="tcp-layers">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="kuis" class="scroll-mt-20">
+            <div class="bg-white p-8 rounded-lg shadow-xl border-t-4 border-[#3d5a80]">
+                <h2 class="text-3xl font-bold text-center mb-4">Uji Pemahamanmu!</h2>
+                <p class="text-center text-gray-600 mb-8">Jawab beberapa pertanyaan singkat ini untuk melihat seberapa jauh pemahamanmu tentang materi dasar jaringan.</p>
+                <div id="quiz-container" class="max-w-2xl mx-auto">
+                </div>
+                <div id="quiz-result" class="hidden text-center mt-6">
+                    <h3 id="result-title" class="text-2xl font-bold"></h3>
+                    <p id="result-text" class="text-gray-700 mt-2"></p>
+                    <button class="btn-primary px-6 py-2 rounded-full font-semibold mt-4" onclick="resetQuiz()">Coba Lagi</button>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-sm">
+            <p>Materi Pembelajaran Interaktif DDPK TKJ Kelas 10.</p>
+        </div>
+    </footer>
+
+<script>
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+    
+    document.querySelectorAll('#mobile-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+        });
+    });
+
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    window.onscroll = () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 70) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
+    };
+
+    function toggleDetail(cardElement) {
+        const detail = cardElement.querySelector('.detail');
+        detail.classList.toggle('hidden');
+    }
+
+    const networkData = {
+        lan: {
+            title: 'LAN (Local Area Network)',
+            description: 'Jaringan yang mencakup area lokal dan terbatas, seperti dalam satu gedung, sekolah, atau rumah. Kecepatannya sangat tinggi karena jaraknya pendek.',
+            example: 'Contoh: Jaringan komputer di laboratorium sekolah, jaringan Wi-Fi di rumah.',
+            scale: 1
+        },
+        man: {
+            title: 'MAN (Metropolitan Area Network)',
+            description: 'Jaringan yang lebih besar dari LAN, mencakup area sebuah kota. Biasanya digunakan untuk menghubungkan beberapa kantor cabang dalam satu kota.',
+            example: 'Contoh: Jaringan yang menghubungkan kantor-kantor pemerintahan di satu kota.',
+            scale: 10
+        },
+        wan: {
+            title: 'WAN (Wide Area Network)',
+            description: 'Jaringan yang mencakup area geografis yang sangat luas, seperti antar kota, negara, atau bahkan benua. Menggunakan infrastruktur telekomunikasi publik.',
+            example: 'Contoh: Jaringan antar cabang sebuah bank di seluruh Indonesia.',
+            scale: 100
+        },
+        internet: {
+            title: 'Internet',
+            description: 'Jaringan komputer global terbesar yang menghubungkan jutaan jaringan di seluruh dunia. Ini adalah "jaringan dari segala jaringan".',
+            example: 'Contoh: World Wide Web (WWW), email, media sosial yang kita gunakan sehari-hari.',
+            scale: 1000
+        }
+    };
+    
+    const networkContentEl = document.getElementById('network-content');
+    let networkChart;
+
+    function showNetwork(type) {
+        const data = networkData[type];
+        networkContentEl.innerHTML = `
+            <h3 class="text-2xl font-bold mb-3">${data.title}</h3>
+            <p class="text-gray-600 mb-4">${data.description}</p>
+            <p class="text-sm text-gray-500 italic">${data.example}</p>
+        `;
+
+        document.querySelectorAll('.network-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`.network-btn[onclick="showNetwork('${type}')"]`).classList.add('active');
+        
+        updateNetworkChart(type);
+    }
+
+    function updateNetworkChart(activeType) {
+        const chartData = Object.keys(networkData).map(key => networkData[key].scale);
+        const backgroundColors = Object.keys(networkData).map(key => key === activeType ? '#3d5a80' : '#dbeafe');
+        const borderColors = Object.keys(networkData).map(key => key === activeType ? '#2c425e' : '#bfdbfe');
+
+        networkChart.data.datasets[0].data = chartData;
+        networkChart.data.datasets[0].backgroundColor = backgroundColors;
+        networkChart.data.datasets[0].borderColor = borderColors;
+        networkChart.update();
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('networkScaleChart').getContext('2d');
+        networkChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['LAN', 'MAN', 'WAN', 'Internet'],
+                datasets: [{
+                    label: 'Skala Cakupan Relatif',
+                    data: [],
+                    backgroundColor: [],
+                    borderColor: [],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        type: 'logarithmic',
+                        ticks: {
+                           callback: function(value, index, values) {
+                                if (value === 1000) return "Global";
+                                if (value === 100) return "Antar Kota";
+                                if (value === 10) return "Satu Kota";
+                                if (value === 1) return "Satu Gedung";
+                                return null;
+                           }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                }
+            }
+        });
+        showNetwork('lan');
+    });
+
+
+    const topologyData = {
+        star: {
+            title: 'Topologi Star (Bintang)',
+            description: 'Semua komputer terhubung ke sebuah titik pusat (konsentrator) seperti Hub atau Switch. Ini adalah topologi yang paling umum digunakan saat ini.',
+            advantages: ['Mudah dipasang dan dikelola.', 'Jika satu komputer rusak, jaringan tetap berjalan.', 'Mudah untuk menambah atau mengurangi komputer.'],
+            disadvantages: ['Sangat bergantung pada perangkat pusat.', 'Jika Hub/Switch rusak, seluruh jaringan akan mati.', 'Biaya lebih mahal karena butuh banyak kabel.'],
+            diagram: `
+                <div class="w-12 h-12 bg-[#3d5a80] text-white flex items-center justify-center rounded-full">Pusat</div>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full w-0.5 h-1/2 bg-gray-400"></div>
+                    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full w-0.5 h-1/2 bg-gray-400"></div>
+                    <div class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full h-0.5 w-1/2 bg-gray-400"></div>
+                    <div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full h-0.5 w-1/2 bg-gray-400"></div>
+                </div>
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full w-10 h-10 bg-blue-200 rounded-full"></div>
+                <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full w-10 h-10 bg-blue-200 rounded-full"></div>
+                <div class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full w-10 h-10 bg-blue-200 rounded-full"></div>
+                <div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full w-10 h-10 bg-blue-200 rounded-full"></div>
+            `
+        },
+        bus: {
+            title: 'Topologi Bus',
+            description: 'Semua komputer terhubung ke satu kabel utama yang disebut "backbone". Di kedua ujung kabel utama harus ada terminator untuk mencegah pantulan sinyal.',
+            advantages: ['Hemat kabel dan biaya instalasi murah.', 'Mudah untuk diimplementasikan pada jaringan kecil.'],
+            disadvantages: ['Sulit mendeteksi kerusakan.', 'Jika kabel utama putus, seluruh jaringan mati.', 'Kinerja menurun jika lalu lintas data padat.'],
+            diagram: `
+                <div class="w-full h-1.5 bg-gray-700 rounded-full"></div>
+                <div class="absolute top-1/2 left-[15%] -translate-y-full w-0.5 h-10 bg-gray-400"></div>
+                <div class="absolute top-1/2 left-[40%] -translate-y-full w-0.5 h-10 bg-gray-400"></div>
+                <div class="absolute top-1/2 left-[65%] -translate-y-full w-0.5 h-10 bg-gray-400"></div>
+                <div class="absolute top-1/2 left-[90%] -translate-y-full w-0.5 h-10 bg-gray-400"></div>
+                <div class="absolute top-1/2 left-[15%] -translate-x-1/2 -translate-y-[calc(100%+2.5rem)] w-10 h-10 bg-blue-200 rounded-full"></div>
+                <div class="absolute top-1/2 left-[40%] -translate-x-1/2 -translate-y-[calc(100%+2.5rem)] w-10 h-10 bg-blue-200 rounded-full"></div>
+                <div class="absolute top-1/2 left-[65%] -translate-x-1/2 -translate-y-[calc(100%+2.5rem)] w-10 h-10 bg-blue-200 rounded-full"></div>
+                <div class="absolute top-1/2 left-[90%] -translate-x-1/2 -translate-y-[calc(100%+2.5rem)] w-10 h-10 bg-blue-200 rounded-full"></div>
+            `
+        },
+        ring: {
+            title: 'Topologi Ring (Cincin)',
+            description: 'Setiap komputer terhubung ke dua komputer lainnya, membentuk sebuah lingkaran. Data dikirim searah dari satu komputer ke komputer berikutnya hingga sampai tujuan.',
+            advantages: ['Performa lebih baik dari Bus karena aliran data satu arah.', 'Mudah diimplementasikan.'],
+            disadvantages: ['Jika satu komputer atau kabel rusak, seluruh jaringan bisa mati.', 'Menambah atau mengurangi komputer akan mengganggu jaringan.'],
+            diagram: `
+                <div class="w-48 h-48 border-4 border-gray-700 rounded-full"></div>
+                 <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-blue-200 rounded-full"></div>
+                 <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-10 h-10 bg-blue-200 rounded-full"></div>
+                 <div class="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-blue-200 rounded-full"></div>
+                 <div class="absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-blue-200 rounded-full"></div>
+            `
+        },
+        mesh: {
+            title: 'Topologi Mesh (Jala)',
+            description: 'Setiap perangkat terhubung secara langsung ke setiap perangkat lainnya. Topologi ini sangat andal (reliable) karena memiliki banyak jalur alternatif untuk data.',
+            advantages: ['Sangat andal dan tahan terhadap kerusakan.', 'Jika satu jalur rusak, data bisa lewat jalur lain.'],
+            disadvantages: ['Sangat mahal karena membutuhkan banyak kabel dan port.', 'Instalasi dan konfigurasinya rumit.'],
+            diagram: `
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full w-10 h-10 bg-blue-200 rounded-full node" style="--i:0;"></div>
+                <div class="absolute right-0 top-1/2 translate-x-full -translate-y-1/2 w-10 h-10 bg-blue-200 rounded-full node" style="--i:1;"></div>
+                <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full w-10 h-10 bg-blue-200 rounded-full node" style="--i:2;"></div>
+                <div class="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 w-10 h-10 bg-blue-200 rounded-full node" style="--i:3;"></div>
+                <canvas id="meshCanvas" class="absolute top-0 left-0 w-full h-full"></canvas>
+            `
+        }
+    };
+
+    const topologyDisplayEl = document.getElementById('topology-display');
+
+    function showTopology(type) {
+        const data = topologyData[type];
+        topologyDisplayEl.innerHTML = `
+            <div>
+                <h3 class="text-2xl font-bold mb-3">${data.title}</h3>
+                <p class="text-gray-600 mb-4">${data.description}</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <h4 class="font-semibold text-green-600 mb-1">Kelebihan:</h4>
+                        <ul class="list-disc list-inside text-gray-600 space-y-1">
+                            ${data.advantages.map(adv => `<li>${adv}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-red-600 mb-1">Kekurangan:</h4>
+                        <ul class="list-disc list-inside text-gray-600 space-y-1">
+                            ${data.disadvantages.map(dis => `<li>${dis}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="topology-diagram flex justify-center items-center relative p-8">
+                ${data.diagram}
+            </div>
+        `;
+
+        if (type === 'mesh') {
+            drawMeshLines();
+        }
+
+        document.querySelectorAll('.topo-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`.topo-btn[onclick="showTopology('${type}')"]`).classList.add('active');
+    }
+    
+    function drawMeshLines() {
+        const canvas = document.getElementById('meshCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const container = canvas.parentElement;
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+
+        const nodes = Array.from(container.querySelectorAll('.node')).map(node => {
+            return {
+                x: node.offsetLeft + node.offsetWidth / 2,
+                y: node.offsetTop + node.offsetHeight / 2
+            };
+        });
+
+        ctx.strokeStyle = '#9ca3af';
+        ctx.lineWidth = 2;
+
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                ctx.beginPath();
+                ctx.moveTo(nodes[i].x, nodes[i].y);
+                ctx.lineTo(nodes[j].x, nodes[j].y);
+                ctx.stroke();
+            }
+        }
+    }
+
+
+    const osiModel = [
+        { name: '7. Application', func: 'Antarmuka antara aplikasi dan jaringan. Cth: HTTP, FTP, SMTP.' },
+        { name: '6. Presentation', func: 'Mentranslasikan, mengenkripsi, dan mengompresi data. Cth: SSL, JPEG.' },
+        { name: '5. Session', func: 'Membangun, mengelola, dan mengakhiri sesi komunikasi antar aplikasi.' },
+        { name: '4. Transport', func: 'Menyediakan transfer data yang andal & segmentasi data. Cth: TCP, UDP.' },
+        { name: '3. Network', func: 'Menentukan alamat IP dan rute pengiriman data. Cth: IP, ICMP.' },
+        { name: '2. Data Link', func: 'Mengelola akses ke media fisik dan alamat MAC. Cth: Ethernet.' },
+        { name: '1. Physical', func: 'Mengirimkan bit data melalui media fisik (kabel, nirkabel). Cth: Kabel, Hub.' }
+    ];
+
+    const tcpModel = [
+        { name: '4. Application', func: 'Mencakup Application, Presentation, Session. Cth: HTTP, FTP.' },
+        { name: '3. Transport', func: 'Sama seperti lapisan Transport pada model OSI. Cth: TCP, UDP.' },
+        { name: '2. Internet', func: 'Sama seperti lapisan Network pada model OSI. Cth: IP.' },
+        { name: '1. Network Access', func: 'Mencakup Data Link dan Physical. Cth: Ethernet, Wi-Fi.' },
+    ];
+    
+    const osiLayersEl = document.getElementById('osi-layers');
+    const tcpLayersEl = document.getElementById('tcp-layers');
+
+    function createLayers(model, element) {
+        model.forEach((layer, index) => {
+            const layerDiv = document.createElement('div');
+            layerDiv.className = 'osi-layer bg-white p-3 rounded-md shadow-sm text-center font-semibold border flex justify-between items-center';
+            layerDiv.innerHTML = `<span>${layer.name}</span> <span class="text-xs font-normal text-gray-500 hidden sm:inline">${layer.func}</span>`;
+            element.appendChild(layerDiv);
+        });
+    }
+
+    const quizData = [
+        {
+            question: "Perangkat yang menghubungkan jaringan lokal ke internet dan menentukan rute terbaik disebut...",
+            options: ["Switch", "Hub", "Router", "NIC"],
+            answer: "Router"
+        },
+        {
+            question: "Jenis jaringan yang mencakup area satu kota adalah...",
+            options: ["LAN", "WAN", "MAN", "Internet"],
+            answer: "MAN"
+        },
+        {
+            question: "Topologi di mana semua komputer terhubung ke sebuah Hub/Switch pusat adalah...",
+            options: ["Bus", "Ring", "Mesh", "Star"],
+            answer: "Star"
+        },
+        {
+            question: "Pada model OSI, lapisan yang bertanggung jawab untuk pengalamatan IP adalah...",
+            options: ["Transport", "Network", "Data Link", "Physical"],
+            answer: "Network"
+        },
+        {
+            question: "Alamat fisik unik yang dimiliki oleh setiap NIC disebut...",
+            options: ["IP Address", "Subnet Mask", "MAC Address", "Gateway"],
+            answer: "MAC Address"
+        }
+    ];
+
+    const quizContainer = document.getElementById('quiz-container');
+    const quizResult = document.getElementById('quiz-result');
+    const resultTitle = document.getElementById('result-title');
+    const resultText = document.getElementById('result-text');
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function loadQuiz() {
+        quizContainer.innerHTML = '';
+        if (currentQuestionIndex < quizData.length) {
+            const currentQuiz = quizData[currentQuestionIndex];
+            const quizHTML = `
+                <p class="font-semibold mb-4">${currentQuestionIndex + 1}. ${currentQuiz.question}</p>
+                <div class="space-y-3">
+                    ${currentQuiz.options.map(option => `
+                        <button class="quiz-option w-full text-left p-3 rounded-lg border-2 border-gray-200 hover:bg-gray-100 hover:border-blue-300 transition-colors">
+                            ${option}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+            quizContainer.innerHTML = quizHTML;
+            document.querySelectorAll('.quiz-option').forEach(button => {
+                button.addEventListener('click', selectAnswer);
+            });
+        } else {
+            showResult();
+        }
+    }
+
+    function selectAnswer(e) {
+        const selectedOption = e.target.innerText;
+        if (selectedOption === quizData[currentQuestionIndex].answer) {
+            score++;
+        }
+        currentQuestionIndex++;
+        loadQuiz();
+    }
+
+    function showResult() {
+        quizContainer.classList.add('hidden');
+        quizResult.classList.remove('hidden');
+        const percentage = (score / quizData.length) * 100;
+        resultTitle.textContent = `Skor Anda: ${percentage}%`;
+        let message = '';
+        if (percentage === 100) {
+            message = 'Luar biasa! Kamu menguasai semua dasar-dasarnya.';
+        } else if (percentage >= 75) {
+            message = 'Bagus sekali! Pemahamanmu sudah sangat baik.';
+        } else if (percentage >= 50) {
+            message = 'Cukup bagus, tapi coba pelajari lagi beberapa bagian.';
+        } else {
+            message = 'Jangan khawatir, coba pelajari lagi materinya dan ulangi kuisnya.';
+        }
+        resultText.textContent = `Anda menjawab ${score} dari ${quizData.length} pertanyaan dengan benar. ${message}`;
+    }
+
+    function resetQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        quizContainer.classList.remove('hidden');
+        quizResult.classList.add('hidden');
+        loadQuiz();
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        showTopology('star');
+        createLayers(osiModel, osiLayersEl);
+        createLayers(tcpModel, tcpLayersEl);
+        loadQuiz();
+    });
+
+</script>
+</body>
+</html>

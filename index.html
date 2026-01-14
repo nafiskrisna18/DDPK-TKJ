@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDPK TJKT Interaktif</title>
+    <!-- Memuat Tailwind CSS CDN untuk styling yang cepat dan responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Mengatur font utama dan transisi halus */
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Styling untuk mode gelap/terang */
+        .theme-button:hover {
+            transform: scale(1.1);
+            transition: transform 0.2s ease;
+        }
+
+        /* Animasi sederhana untuk pesan sapaan */
+        .greeting-animation {
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Styling responsif untuk waktu/tanggal */
+        #time-display {
+            font-size: 5rem;
+            font-weight: 100; /* Tipis untuk tampilan minimalis */
+            letter-spacing: -0.05em;
+        }
+        #date-display {
+            font-size: 1.5rem;
+        }
+
+        /* Styling untuk tombol tab */
+        .tab-link {
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            border-radius: 0.75rem; /* rounded-xl */
+            cursor: pointer;
+            text-align: center;
+            user-select: none; /* Mencegah seleksi teks saat klik cepat */
+        }
+        .tab-link:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            background-color: rgba(99, 102, 241, 0.1); /* Indigo 100 */
+        }
+        
+        /* Dark mode hover styling */
+        .dark .tab-link:hover {
+            background-color: rgba(99, 102, 241, 0.2); /* Indigo 900 semi-transparan */
+        }
+
+
+        @media (max-width: 768px) {
+            #time-display {
+                font-size: 3.5rem;
+            }
+            #date-display {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 flex flex-col items-center justify-center min-h-screen p-4 transition-colors duration-500">
+
+    <!-- Kontainer Utama -->
+    <div id="main-container" class="max-w-4xl w-full text-center">
+
+        <!-- Tombol Tema (Toggle Dark/Light Mode) -->
+        <button id="theme-toggle" class="theme-button absolute top-5 right-5 p-3 rounded-full bg-white shadow-lg dark:bg-gray-700 dark:text-gray-200 focus:outline-none transition duration-300 ease-in-out">
+            <!-- Icon Bulan (Dark Mode) / Icon Matahari (Light Mode) -->
+            <svg id="theme-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </button>
+
+        <!-- Pesan Sapaan Dinamis -->
+        <h1 id="greeting" class="greeting-animation text-xl sm:text-2xl font-light mb-6"></h1>
+
+        <!-- Tampilan Waktu Real-Time -->
+        <div class="space-y-2 mb-8">
+            <p id="time-display" class="transition-colors duration-500"></p>
+            <p id="date-display" class="font-normal text-gray-500 dark:text-gray-400 transition-colors duration-500"></p>
+        </div>
+
+        <!-- Bagian Interaktif (Kotak Pencarian) -->
+        <div class="mt-8 mb-16">
+            <form onsubmit="searchGoogle(event)">
+                <div class="flex max-w-lg mx-auto rounded-xl shadow-xl overflow-hidden bg-white dark:bg-gray-800 transition-shadow duration-300 hover:shadow-2xl">
+                    <input type="text" id="search-input" placeholder="Cari di Google atau mulai hari Anda..."
+                           class="w-full p-4 text-lg border-none focus:ring-0 dark:bg-gray-800 dark:text-gray-200 placeholder-gray-400 transition-colors duration-300"
+                           required>
+                    <button type="submit" class="bg-indigo-600 text-white p-4 hover:bg-indigo-700 transition duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Bagian Tautan Cepat (8 Tabs untuk Navigasi Bab) -->
+        <div id="quick-links" class="max-w-3xl mx-auto grid grid-cols-4 md:grid-cols-8 gap-4">
+            
+            <!-- Ikon dokumen yang sama digunakan untuk semua BAB agar terlihat konsisten -->
+            <!-- BAB 1 -->
+            <a href="BAB 1.html" class="tab-link bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-gray-700 text-indigo-600 dark:text-indigo-400">
+                <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">BAB 1</span>
+            </a>
+
+            <!-- BAB 2 -->
+            <a href="BAB 2.html" class="tab-link bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-gray-700 text-indigo-600 dark:text-indigo-400">
+                <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">BAB 2</span>
+            </a>
+
+            <!-- BAB 3 -->
+            <a href="BAB 3.html" class="tab-link bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-gray-700 text-indigo-600 dark:text-indigo-400">
+                <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">BAB 3</span>
+            </a>
+
+            <!-- BAB 4 -->
+            <a href="BAB 4.html" class="tab-link bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-gray-700 text-indigo-600 dark:text-indigo-400">
+                <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">BAB 4</span>
+            </a>
+            
+            <!-- BAB 5 -->
+            <a href="BAB 5.html" class="tab-link bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-gray-700 text-indigo-600 dark:text-indigo-400">
+                <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">BAB 5</span>
+            </a>
+
+            <!-- BAB 6 -->
+            <a href="BAB 6.html" class="tab-link bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-gray-700 text-indigo-600 dark:text-indigo-400">
+                <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">BAB 6</span>
+            </a>
+            
+            <!-- BAB 7 -->
+            <a href="lainnya/Dasar_Jaringan_dan_Telekomunikasi.html" class="tab-link bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-gray-700 text-indigo-600 dark:text-indigo-400">
+                <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Lainnya 1</span>
+            </a>
+
+            <!-- BAB 8 -->
+            <a href="lainnya/Media_dan_Telekomunikasi.html" class="tab-link bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-gray-700 text-indigo-600 dark:text-indigo-400">
+                <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Lainnya 2</span>
+            </a>
+
+            <!-- BAB 9 -->
+            <a href="lainnya/Dasar_Kejuruan_TJKT.html" class="tab-link bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-gray-700 text-indigo-600 dark:text-indigo-400">
+                <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Lainnya 3</span>
+            </a>
+
+            <!-- BAB 10 -->
+            <a href="lainnya/Dasar_Kejurusan_TJKT.html" class="tab-link bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-gray-700 text-indigo-600 dark:text-indigo-400">
+                <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Lainnya 4</span>
+            </a>
+
+        </div>
+    </div>
+
+    <script>
+        // Inisialisasi variabel global untuk konfigurasi tema
+        const THEME_KEY = 'minimalistTheme';
+        const searchInput = document.getElementById('search-input');
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const timeDisplay = document.getElementById('time-display');
+        const dateDisplay = document.getElementById('date-display');
+        const greetingElement = document.getElementById('greeting');
+
+        // Fungsi untuk mengupdate waktu dan tanggal
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Format waktu (HH:MM:SS)
+            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const timeString = now.toLocaleTimeString('id-ID', timeOptions);
+            timeDisplay.textContent = timeString;
+
+            // Format tanggal (Hari, DD Bulan YYYY)
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('id-ID', dateOptions);
+            dateDisplay.textContent = dateString;
+
+            // Update pesan sapaan
+            updateGreeting(now.getHours());
+        }
+
+        // Fungsi untuk mengupdate pesan sapaan berdasarkan waktu
+        function updateGreeting(hour) {
+            let greetingText;
+            if (hour >= 5 && hour < 12) {
+                greetingText = "Selamat Pagi! Siap memulai hari?";
+            } else if (hour >= 12 && hour < 18) {
+                greetingText = "Selamat Siang! Bagaimana aktivitas Anda?";
+            } else if (hour >= 18 && hour < 22) {
+                greetingText = "Selamat Sore! Waktunya bersantai.";
+            } else {
+                greetingText = "Selamat Malam! Semoga hari Anda menyenangkan.";
+            }
+            greetingElement.textContent = greetingText;
+        }
+
+        // Fungsi untuk menerapkan tema (gelap atau terang)
+        function applyTheme(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark', 'bg-gray-900', 'text-gray-100');
+                document.body.classList.remove('bg-gray-50', 'text-gray-900');
+                themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>`; // Icon Bulan
+            } else {
+                document.body.classList.remove('dark', 'bg-gray-900', 'text-gray-100');
+                document.body.classList.add('bg-gray-50', 'text-gray-900');
+                themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>`; // Icon Matahari
+            }
+            // Simpan preferensi tema
+            localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+        }
+
+        // Fungsi untuk mengaktifkan/menonaktifkan tema
+        function toggleTheme() {
+            const isDark = document.body.classList.contains('dark');
+            applyTheme(!isDark);
+        }
+
+        // Fungsi untuk pencarian Google
+        function searchGoogle(event) {
+            event.preventDefault();
+            const query = searchInput.value.trim();
+            if (query) {
+                const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+                window.open(url, '_blank');
+            }
+        }
+
+        // Inisialisasi dan Listener
+        window.onload = function() {
+            // 1. Muat preferensi tema
+            const storedTheme = localStorage.getItem(THEME_KEY);
+            // Default ke dark mode jika belum ada preferensi, atau ikuti sistem
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (storedTheme === 'dark') {
+                applyTheme(true);
+            } else if (storedTheme === 'light') {
+                applyTheme(false);
+            } else if (prefersDark) {
+                applyTheme(true); // Default ke preferensi sistem
+            } else {
+                applyTheme(false); // Default ke terang jika tidak ada preferensi
+            }
+
+            // 2. Setup event listener
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // 3. Update waktu segera dan setiap detik
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            // 4. Fokuskan input pencarian untuk interaksi cepat
+            searchInput.focus();
+        };
+
+        
+    </script>
+</body>
+</html>

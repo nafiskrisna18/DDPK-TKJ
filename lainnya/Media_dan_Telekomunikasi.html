@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dasar-Dasar TKJ: Media & Jaringan Telekomunikasi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Cool Blues and Neutrals -->
+    <!-- Application Structure Plan: The application is structured as a single-page interactive learning module with a sticky navigation bar for easy access to different thematic sections (Introduction, Transmission Media, Networks, Data Transmission, Quiz). This non-linear structure allows students to explore topics at their own pace. Key interactions include clickable diagrams, tabbed content for comparing media types, an interactive chart for data comparison, and a quiz for self-assessment. This design was chosen to transform passive reading into an active learning experience, which is more engaging and effective for a technical subject aimed at vocational students. -->
+    <!-- Visualization & Content Choices: 
+        - Communication Model: Report Info -> Basic communication components -> Goal: Inform -> Viz: Interactive diagram (HTML/CSS divs) -> Interaction: Click reveals component description -> Justification: Simplifies and visually explains the core concept -> Method: Vanilla JS.
+        - Media Comparison: Report Info -> Characteristics of transmission media -> Goal: Compare -> Viz: Interactive Bar Chart -> Interaction: Select media to compare speed, cost, distance -> Justification: Enables direct visual comparison of key metrics, superior to static tables -> Library: Chart.js (Canvas).
+        - Transmission Modes: Report Info -> Simplex, Half-duplex, Full-duplex -> Goal: Explain -> Viz: Animated diagrams (HTML/CSS) -> Interaction: Click to see data flow animation and definition -> Justification: Makes the abstract concept of data flow tangible -> Method: Vanilla JS & CSS.
+        - Knowledge Check: Report Info -> Key learning points -> Goal: Assess -> Viz: Multiple Choice Quiz -> Interaction: Select answers, get immediate feedback and score -> Justification: Reinforces learning through self-assessment -> Method: Vanilla JS.
+        All interactive elements are designed to break down complex information into digestible, engaging parts. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0ea5e9;
+            border-bottom-color: #0ea5e9;
+        }
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .content-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .tab-btn.active {
+            background-color: #0ea5e9;
+            color: white;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .flow-diagram-item {
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .flow-diagram-item.selected {
+            border-color: #0ea5e9;
+            background-color: #e0f2fe;
+        }
+        .quiz-option:hover {
+            background-color: #e0f2fe;
+        }
+        .quiz-option.correct {
+            background-color: #dcfce7;
+            border-color: #22c55e;
+        }
+        .quiz-option.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-xl md:text-2xl font-bold text-sky-600">Dasar Jaringan & Telekomunikasi</h1>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#pendahuluan" class="nav-link text-gray-600 font-medium border-b-2 border-transparent pb-1">Pendahuluan</a>
+                    <a href="#media" class="nav-link text-gray-600 font-medium border-b-2 border-transparent pb-1">Media Transmisi</a>
+                    <a href="#jaringan" class="nav-link text-gray-600 font-medium border-b-2 border-transparent pb-1">Jenis Jaringan</a>
+                    <a href="#transmisi" class="nav-link text-gray-600 font-medium border-b-2 border-transparent pb-1">Transmisi Data</a>
+                    <a href="#kuis" class="nav-link text-gray-600 font-medium border-b-2 border-transparent pb-1">Kuis Interaktif</a>
+                </nav>
+                 <div class="md:hidden">
+                    <select id="mobile-nav" class="border border-gray-300 rounded-md p-2 bg-white text-sm">
+                        <option value="#pendahuluan">Pendahuluan</option>
+                        <option value="#media">Media Transmisi</option>
+                        <option value="#jaringan">Jenis Jaringan</option>
+                        <option value="#transmisi">Transmisi Data</option>
+                        <option value="#kuis">Kuis Interaktif</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <section id="pendahuluan" class="py-12">
+            <h2 class="text-3xl font-bold text-center mb-4 text-slate-800">Apa itu Telekomunikasi?</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                Telekomunikasi adalah proses pertukaran informasi (seperti suara, data, dan video) dari satu titik ke titik lain melalui media elektronik. Bayangkan mengirim pesan ke temanmu; itulah telekomunikasi! Proses ini memiliki tiga komponen utama. Klik setiap komponen di bawah untuk mempelajarinya.
+            </p>
+            <div class="grid md:grid-cols-5 gap-4 items-center text-center">
+                <div id="sender" class="component-box p-6 bg-white rounded-lg shadow-lg cursor-pointer border-2 border-transparent hover:border-sky-500 transition">
+                    <div class="text-4xl mb-2">💻</div>
+                    <h3 class="font-semibold text-lg">Pengirim (Sender)</h3>
+                </div>
+                <div class="flex justify-center items-center">
+                    <span class="text-3xl font-bold text-gray-400">→</span>
+                </div>
+                <div id="media-comp" class="component-box p-6 bg-white rounded-lg shadow-lg cursor-pointer border-2 border-transparent hover:border-sky-500 transition">
+                     <div class="text-4xl mb-2">⚡️</div>
+                    <h3 class="font-semibold text-lg">Media Transmisi</h3>
+                </div>
+                <div class="flex justify-center items-center">
+                    <span class="text-3xl font-bold text-gray-400">→</span>
+                </div>
+                <div id="receiver" class="component-box p-6 bg-white rounded-lg shadow-lg cursor-pointer border-2 border-transparent hover:border-sky-500 transition">
+                     <div class="text-4xl mb-2">📱</div>
+                    <h3 class="font-semibold text-lg">Penerima (Receiver)</h3>
+                </div>
+            </div>
+            <div id="component-info" class="mt-8 p-6 bg-sky-50 rounded-lg text-center min-h-[100px] flex items-center justify-center transition-all duration-300">
+                <p class="text-sky-800">Klik salah satu komponen di atas untuk melihat penjelasannya.</p>
+            </div>
+        </section>
+
+        <hr class="my-12">
+
+        <section id="media" class="py-12">
+            <h2 class="text-3xl font-bold text-center mb-4 text-slate-800">Media Transmisi</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                Media transmisi adalah jalur fisik yang dilalui sinyal dari pengirim ke penerima. Ada dua kategori utama: media yang menggunakan kabel (guided) dan media nirkabel/tanpa kabel (unguided).
+            </p>
+            <div class="flex justify-center mb-8">
+                <div class="bg-gray-200 rounded-full p-1 flex">
+                    <button id="tab-kabel" class="tab-btn active px-6 py-2 rounded-full font-semibold transition">Kabel (Guided)</button>
+                    <button id="tab-nirkabel" class="tab-btn px-6 py-2 rounded-full font-semibold transition">Nirkabel (Unguided)</button>
+                </div>
+            </div>
+            
+            <div id="content-kabel">
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="card bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="font-bold text-xl mb-2">Twisted Pair</h3>
+                        <p class="text-gray-600 text-sm mb-4">Terdiri dari pasang-pasangan kabel tembaga yang dipilin. Umum digunakan untuk jaringan telepon dan LAN (kabel UTP & STP).</p>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start"><span class="text-green-500 mr-2">✔</span> Harga murah & instalasi mudah.</li>
+                            <li class="flex items-start"><span class="text-red-500 mr-2">✖</span> Rentan terhadap interferensi (gangguan sinyal).</li>
+                        </ul>
+                    </div>
+                    <div class="card bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="font-bold text-xl mb-2">Coaxial</h3>
+                        <p class="text-gray-600 text-sm mb-4">Memiliki konduktor tembaga di pusat yang dikelilingi lapisan isolator. Biasa dipakai untuk TV kabel dan internet kabel.</p>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start"><span class="text-green-500 mr-2">✔</span> Lebih tahan interferensi dibanding twisted pair.</li>
+                             <li class="flex items-start"><span class="text-red-500 mr-2">✖</span> Lebih mahal dan kurang fleksibel.</li>
+                        </ul>
+                    </div>
+                    <div class="card bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="font-bold text-xl mb-2">Fiber Optik</h3>
+                        <p class="text-gray-600 text-sm mb-4">Menggunakan serat kaca atau plastik untuk mentransmisikan data dalam bentuk pulsa cahaya. Kecepatan sangat tinggi.</p>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start"><span class="text-green-500 mr-2">✔</span> Kecepatan super tinggi & tahan interferensi.</li>
+                             <li class="flex items-start"><span class="text-red-500 mr-2">✖</span> Biaya instalasi dan perawatan sangat mahal.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content-nirkabel" class="hidden">
+                 <div class="grid md:grid-cols-3 gap-8">
+                    <div class="card bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="font-bold text-xl mb-2">Gelombang Radio</h3>
+                        <p class="text-gray-600 text-sm mb-4">Digunakan untuk siaran radio, televisi, Wi-Fi, dan Bluetooth. Sinyal dapat menembus halangan seperti dinding.</p>
+                         <ul class="text-sm space-y-2">
+                            <li class="flex items-start"><span class="text-green-500 mr-2">✔</span> Mobilitas tinggi dan jangkauan luas.</li>
+                            <li class="flex items-start"><span class="text-red-500 mr-2">✖</span> Kecepatan dipengaruhi oleh banyak pengguna dan halangan.</li>
+                        </ul>
+                    </div>
+                    <div class="card bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="font-bold text-xl mb-2">Gelombang Mikro</h3>
+                        <p class="text-gray-600 text-sm mb-4">Transmisi data dengan frekuensi tinggi. Digunakan untuk komunikasi satelit dan jaringan antar gedung (point-to-point).</p>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start"><span class="text-green-500 mr-2">✔</span> Kapasitas bandwidth besar untuk jarak jauh.</li>
+                             <li class="flex items-start"><span class="text-red-500 mr-2">✖</span> Membutuhkan line-of-sight (tanpa halangan).</li>
+                        </ul>
+                    </div>
+                    <div class="card bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="font-bold text-xl mb-2">Inframerah</h3>
+                        <p class="text-gray-600 text-sm mb-4">Digunakan untuk komunikasi jarak sangat dekat, seperti pada remote TV atau transfer data antar perangkat lawas.</p>
+                         <ul class="text-sm space-y-2">
+                            <li class="flex items-start"><span class="text-green-500 mr-2">✔</span> Aman dari penyadapan karena jangkauan pendek.</li>
+                             <li class="flex items-start"><span class="text-red-500 mr-2">✖</span> Tidak bisa menembus dinding atau halangan.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-16 bg-white p-6 rounded-xl shadow-lg">
+                 <h3 class="text-2xl font-bold text-center mb-4">Perbandingan Interaktif Media Transmisi</h3>
+                 <p class="text-center text-gray-600 mb-6">Pilih media di bawah ini untuk membandingkan kecepatan, jarak, dan biayanya.</p>
+                 <div id="media-checkboxes" class="flex flex-wrap justify-center gap-4 mb-6">
+                 </div>
+                 <div class="chart-container">
+                     <canvas id="mediaComparisonChart"></canvas>
+                 </div>
+            </div>
+        </section>
+
+        <hr class="my-12">
+        
+        <section id="jaringan" class="py-12">
+            <h2 class="text-3xl font-bold text-center mb-4 text-slate-800">Jenis Jaringan Berdasarkan Area</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">Jaringan komputer diklasifikasikan berdasarkan jangkauan geografisnya. Klik pada setiap jenis untuk melihat detailnya.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="network-card card bg-white p-6 rounded-lg shadow-md text-center cursor-pointer" data-info="LAN (Local Area Network) adalah jaringan yang mencakup area kecil seperti rumah, sekolah, atau satu gedung perkantoran. Kecepatannya tinggi dan biasanya dimiliki secara pribadi. Contoh: Jaringan komputer di lab sekolah.">
+                    <div class="text-5xl mb-3">🏢</div>
+                    <h3 class="font-bold text-xl">LAN</h3>
+                    <p class="text-sm text-gray-500">Local Area Network</p>
+                </div>
+                <div class="network-card card bg-white p-6 rounded-lg shadow-md text-center cursor-pointer" data-info="MAN (Metropolitan Area Network) mencakup area yang lebih besar dari LAN, seperti satu kota. Jaringan ini menghubungkan beberapa LAN. Biasanya dimiliki oleh penyedia layanan jaringan. Contoh: Jaringan yang menghubungkan kantor cabang bank di satu kota.">
+                    <div class="text-5xl mb-3">🏙️</div>
+                    <h3 class="font-bold text-xl">MAN</h3>
+                    <p class="text-sm text-gray-500">Metropolitan Area Network</p>
+                </div>
+                <div class="network-card card bg-white p-6 rounded-lg shadow-md text-center cursor-pointer" data-info="WAN (Wide Area Network) adalah jaringan yang mencakup area geografis yang sangat luas, seperti negara atau benua. WAN menghubungkan beberapa MAN dan LAN. Kecepatannya lebih lambat dibanding LAN. Contoh: Jaringan ATM yang tersebar di seluruh Indonesia.">
+                    <div class="text-5xl mb-3">🌍</div>
+                    <h3 class="font-bold text-xl">WAN</h3>
+                    <p class="text-sm text-gray-500">Wide Area Network</p>
+                </div>
+                <div class="network-card card bg-white p-6 rounded-lg shadow-md text-center cursor-pointer" data-info="Internet adalah WAN terbesar di dunia yang bersifat publik dan dapat diakses oleh siapa saja. Internet merupakan kumpulan dari jutaan jaringan kecil (LAN, MAN, WAN) yang saling terhubung di seluruh dunia.">
+                    <div class="text-5xl mb-3">🌐</div>
+                    <h3 class="font-bold text-xl">Internet</h3>
+                    <p class="text-sm text-gray-500">Jaringan Global</p>
+                </div>
+            </div>
+            <div id="network-info" class="mt-8 p-6 bg-sky-50 rounded-lg text-center min-h-[100px] flex items-center justify-center transition-all duration-300">
+                <p class="text-sky-800">Klik salah satu jenis jaringan di atas untuk melihat penjelasannya.</p>
+            </div>
+        </section>
+        
+        <hr class="my-12">
+        
+        <section id="transmisi" class="py-12">
+            <h2 class="text-3xl font-bold text-center mb-4 text-slate-800">Mode Transmisi Data</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">Mode transmisi menentukan arah aliran data antara dua perangkat. Ada tiga mode utama. Pilih salah satu untuk melihat cara kerjanya.</p>
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                 <div id="mode-simplex" class="flow-diagram-item p-6 bg-white rounded-lg shadow-md border-2">
+                    <h3 class="font-bold text-xl mb-2">Simplex</h3>
+                    <div class="text-3xl font-mono text-sky-600">A → B</div>
+                    <p class="text-sm text-gray-500 mt-2">Komunikasi hanya satu arah.</p>
+                </div>
+                <div id="mode-half-duplex" class="flow-diagram-item p-6 bg-white rounded-lg shadow-md border-2">
+                    <h3 class="font-bold text-xl mb-2">Half-Duplex</h3>
+                    <div class="text-3xl font-mono text-sky-600">A ↔ B</div>
+                    <p class="text-sm text-gray-500 mt-2">Dua arah, tapi bergantian.</p>
+                </div>
+                <div id="mode-full-duplex" class="flow-diagram-item p-6 bg-white rounded-lg shadow-md border-2">
+                    <h3 class="font-bold text-xl mb-2">Full-Duplex</h3>
+                    <div class="text-3xl font-mono text-sky-600">A ⇆ B</div>
+                    <p class="text-sm text-gray-500 mt-2">Dua arah, secara bersamaan.</p>
+                </div>
+            </div>
+            <div id="mode-info" class="mt-8 p-6 bg-white rounded-lg shadow-lg text-left min-h-[120px]">
+                <h4 id="mode-title" class="font-bold text-lg text-sky-700">Pilih Mode Transmisi</h4>
+                <p id="mode-description" class="text-gray-600 mt-2">Klik salah satu mode di atas untuk melihat penjelasan dan contohnya.</p>
+            </div>
+        </section>
+
+        <hr class="my-12">
+
+        <section id="kuis" class="py-12">
+            <h2 class="text-3xl font-bold text-center mb-4 text-slate-800">Kuis Interaktif</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">Uji pemahamanmu tentang materi yang sudah dipelajari. Pilih jawaban yang menurutmu paling tepat!</p>
+            
+            <div id="quiz-container" class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+                <div id="quiz-question" class="text-lg font-semibold mb-6"></div>
+                <div id="quiz-options" class="space-y-4"></div>
+                <div id="quiz-feedback" class="mt-6 text-center font-medium"></div>
+                <div class="flex justify-between items-center mt-8">
+                     <p id="quiz-progress" class="text-sm text-gray-500"></p>
+                    <button id="next-question-btn" class="bg-sky-500 text-white font-bold py-2 px-6 rounded-full hover:bg-sky-600 transition disabled:bg-gray-300" disabled>Lanjut</button>
+                </div>
+            </div>
+            
+            <div id="quiz-result" class="hidden max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg text-center">
+                 <h3 class="text-2xl font-bold mb-4">Hasil Kuis Selesai!</h3>
+                 <div id="score-emoji" class="text-6xl mb-4"></div>
+                 <p class="text-lg">Skor Akhir Kamu:</p>
+                 <p id="final-score" class="text-4xl font-bold my-2 text-sky-600"></p>
+                 <p id="score-message" class="text-gray-600 mb-8"></p>
+                 <button id="restart-quiz-btn" class="bg-sky-500 text-white font-bold py-2 px-8 rounded-full hover:bg-sky-600 transition">Ulangi Kuis</button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-white mt-16">
+        <div class="container mx-auto p-6 text-center text-sm">
+            <p>&copy; 2025 Materi Pembelajaran DDPK TKJ. Dibuat untuk tujuan edukasi.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const componentInfo = {
+                sender: { title: "Pengirim (Sender)", description: "Perangkat yang memulai proses komunikasi dengan membuat dan mengirimkan data. Contoh: Komputer yang mengirim email, ponsel yang melakukan panggilan." },
+                'media-comp': { title: "Media Transmisi", description: "Jalur fisik atau non-fisik yang digunakan sinyal untuk berjalan dari pengirim ke penerima. Bisa berupa kabel tembaga, fiber optik, atau gelombang udara." },
+                receiver: { title: "Penerima (Receiver)", description: "Perangkat yang menjadi tujuan akhir dari data yang dikirimkan. Penerima akan menangkap sinyal dan mengubahnya kembali menjadi informasi yang dapat dimengerti. Contoh: Ponsel yang menerima telepon." }
+            };
+
+            const infoBox = document.getElementById('component-info');
+            document.querySelectorAll('.component-box').forEach(box => {
+                box.addEventListener('click', () => {
+                    const info = componentInfo[box.id];
+                    infoBox.innerHTML = `<h4 class="font-bold text-lg text-sky-700">${info.title}</h4><p class="text-sky-800 mt-2">${info.description}</p>`;
+                });
+            });
+
+            const tabKabel = document.getElementById('tab-kabel');
+            const tabNirkabel = document.getElementById('tab-nirkabel');
+            const contentKabel = document.getElementById('content-kabel');
+            const contentNirkabel = document.getElementById('content-nirkabel');
+
+            tabKabel.addEventListener('click', () => {
+                tabKabel.classList.add('active');
+                tabNirkabel.classList.remove('active');
+                contentKabel.classList.remove('hidden');
+                contentNirkabel.classList.add('hidden');
+            });
+
+            tabNirkabel.addEventListener('click', () => {
+                tabNirkabel.classList.add('active');
+                tabKabel.classList.remove('active');
+                contentNirkabel.classList.remove('hidden');
+                contentKabel.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.network-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const info = card.getAttribute('data-info');
+                    document.getElementById('network-info').innerHTML = `<p class="text-sky-800">${info}</p>`;
+                     document.querySelectorAll('.network-card').forEach(c => c.classList.remove('ring-2', 'ring-sky-500'));
+                    card.classList.add('ring-2', 'ring-sky-500');
+                });
+            });
+            
+            const modeInfo = {
+                'mode-simplex': {
+                    title: 'Simplex (Satu Arah)',
+                    description: 'Data mengalir hanya ke satu arah, tidak bisa sebaliknya. Perangkat yang satu hanya bisa mengirim, dan yang lain hanya bisa menerima. <br><b>Contoh:</b> Siaran televisi atau radio, keyboard ke komputer.'
+                },
+                'mode-half-duplex': {
+                    title: 'Half-Duplex (Dua Arah Bergantian)',
+                    description: 'Data dapat mengalir ke dua arah, tetapi tidak secara bersamaan. Harus bergantian antara mengirim dan menerima. <br><b>Contoh:</b> Walkie-talkie (Handy Talky).'
+                },
+                'mode-full-duplex': {
+                    title: 'Full-Duplex (Dua Arah Bersamaan)',
+                    description: 'Data dapat mengalir ke dua arah secara bersamaan. Perangkat bisa mengirim dan menerima data pada saat yang sama. <br><b>Contoh:</b> Panggilan telepon, video conference.'
+                }
+            };
+
+            document.querySelectorAll('.flow-diagram-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.flow-diagram-item').forEach(i => i.classList.remove('selected'));
+                    item.classList.add('selected');
+
+                    const modeData = modeInfo[item.id];
+                    document.getElementById('mode-title').innerText = modeData.title;
+                    document.getElementById('mode-description').innerHTML = modeData.description;
+                });
+            });
+            
+            const mediaData = {
+                "Twisted Pair": { speed: 2, distance: 1, cost: 1 },
+                "Coaxial": { speed: 4, distance: 3, cost: 3 },
+                "Fiber Optik": { speed: 10, distance: 10, cost: 10 },
+                "Radio": { speed: 5, distance: 6, cost: 4 },
+                "Mikro": { speed: 8, distance: 8, cost: 8 },
+            };
+
+            const mediaCheckboxesContainer = document.getElementById('media-checkboxes');
+            let selectedMedia = ["Twisted Pair", "Fiber Optik"];
+
+            Object.keys(mediaData).forEach(media => {
+                const label = document.createElement('label');
+                label.className = "inline-flex items-center cursor-pointer";
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = media;
+                checkbox.className = "form-checkbox h-5 w-5 text-sky-600 rounded";
+                if(selectedMedia.includes(media)) {
+                    checkbox.checked = true;
+                }
+                checkbox.addEventListener('change', () => updateSelectedMedia(checkbox));
+                const span = document.createElement('span');
+                span.className = "ml-2 text-gray-700";
+                span.textContent = media;
+                label.appendChild(checkbox);
+                label.appendChild(span);
+                mediaCheckboxesContainer.appendChild(label);
+            });
+
+            const ctx = document.getElementById('mediaComparisonChart').getContext('2d');
+            let mediaChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Kecepatan (Relatif)', 'Jarak (Relatif)', 'Biaya (Relatif)'],
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                             ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: { display: false },
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            function updateSelectedMedia(checkbox) {
+                if (checkbox.checked) {
+                    if (!selectedMedia.includes(checkbox.value)) {
+                        selectedMedia.push(checkbox.value);
+                    }
+                } else {
+                    selectedMedia = selectedMedia.filter(m => m !== checkbox.value);
+                }
+                updateChart();
+            }
+
+            function updateChart() {
+                const colors = ['#38bdf8', '#fb923c', '#4ade80', '#f87171', '#a78bfa'];
+                mediaChart.data.datasets = selectedMedia.map((media, index) => {
+                    return {
+                        label: media,
+                        data: [mediaData[media].speed, mediaData[media].distance, mediaData[media].cost],
+                        backgroundColor: colors[index % colors.length] + '80',
+                        borderColor: colors[index % colors.length],
+                        borderWidth: 1
+                    }
+                });
+                mediaChart.update();
+            }
+
+            updateChart();
+
+            const quizData = [
+                {
+                    question: "Media transmisi yang menggunakan pulsa cahaya untuk mengirim data adalah...",
+                    options: ["Kabel Coaxial", "Kabel Twisted Pair", "Fiber Optik", "Gelombang Radio"],
+                    answer: "Fiber Optik"
+                },
+                {
+                    question: "Jaringan komputer yang mencakup area satu kota disebut...",
+                    options: ["LAN", "WAN", "MAN", "Internet"],
+                    answer: "MAN"
+                },
+                {
+                    question: "Contoh komunikasi dengan mode Half-Duplex adalah...",
+                    options: ["Siaran TV", "Telepon", "Walkie-talkie", "Email"],
+                    answer: "Walkie-talkie"
+                },
+                {
+                    question: "Kelemahan utama dari kabel UTP (Unshielded Twisted Pair) adalah...",
+                    options: ["Harganya mahal", "Instalasinya sulit", "Rentan terhadap interferensi", "Kecepatannya lambat"],
+                    answer: "Rentan terhadap interferensi"
+                },
+                 {
+                    question: "Jaringan komputer terbesar di dunia yang bersifat publik adalah...",
+                    options: ["LAN", "WAN", "MAN", "Internet"],
+                    answer: "Internet"
+                }
+            ];
+
+            let currentQuestionIndex = 0;
+            let score = 0;
+            const questionEl = document.getElementById('quiz-question');
+            const optionsEl = document.getElementById('quiz-options');
+            const feedbackEl = document.getElementById('quiz-feedback');
+            const nextBtn = document.getElementById('next-question-btn');
+            const progressEl = document.getElementById('quiz-progress');
+            const quizContainer = document.getElementById('quiz-container');
+            const resultContainer = document.getElementById('quiz-result');
+            const finalScoreEl = document.getElementById('final-score');
+            const restartBtn = document.getElementById('restart-quiz-btn');
+
+            function loadQuestion() {
+                feedbackEl.textContent = '';
+                nextBtn.disabled = true;
+                
+                const currentQuestion = quizData[currentQuestionIndex];
+                questionEl.textContent = currentQuestion.question;
+                optionsEl.innerHTML = '';
+                progressEl.textContent = `Soal ${currentQuestionIndex + 1} dari ${quizData.length}`;
+
+                currentQuestion.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.className = 'w-full text-left p-4 border-2 border-gray-200 rounded-lg quiz-option transition';
+                    button.onclick = () => selectAnswer(button, option, currentQuestion.answer);
+                    optionsEl.appendChild(button);
+                });
+            }
+
+            function selectAnswer(button, selectedOption, correctAnswer) {
+                Array.from(optionsEl.children).forEach(btn => btn.disabled = true);
+                nextBtn.disabled = false;
+
+                if (selectedOption === correctAnswer) {
+                    score++;
+                    button.classList.add('correct');
+                    feedbackEl.textContent = 'Jawaban Benar! 👍';
+                    feedbackEl.className = 'mt-6 text-center font-medium text-green-600';
+                } else {
+                    button.classList.add('incorrect');
+                    feedbackEl.textContent = `Jawaban Salah. Yang benar adalah: ${correctAnswer}`;
+                    feedbackEl.className = 'mt-6 text-center font-medium text-red-600';
+                    Array.from(optionsEl.children).forEach(btn => {
+                        if (btn.textContent === correctAnswer) {
+                            btn.classList.add('correct');
+                        }
+                    });
+                }
+            }
+
+            nextBtn.addEventListener('click', () => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < quizData.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            });
+
+            restartBtn.addEventListener('click', () => {
+                currentQuestionIndex = 0;
+                score = 0;
+                resultContainer.classList.add('hidden');
+                quizContainer.classList.remove('hidden');
+                loadQuestion();
+            });
+
+            function showResults() {
+                quizContainer.classList.add('hidden');
+                resultContainer.classList.remove('hidden');
+                finalScoreEl.textContent = `${(score / quizData.length) * 100}`;
+                
+                const percentage = (score / quizData.length) * 100;
+                let message = '';
+                let emoji = '';
+                if(percentage == 100) {
+                    message = 'Luar biasa! Kamu menguasai semua materi.';
+                    emoji = '🎉';
+                } else if (percentage >= 80) {
+                    message = 'Kerja bagus! Pemahamanmu sudah sangat baik.';
+                    emoji = '👍';
+                } else if (percentage >= 60) {
+                    message = 'Cukup bagus, tapi coba pelajari lagi beberapa topik.';
+                    emoji = '😊';
+                } else {
+                    message = 'Jangan menyerah, coba ulangi kuis dan pelajari materinya lagi ya!';
+                    emoji = '📖';
+                }
+                document.getElementById('score-message').textContent = message;
+                document.getElementById('score-emoji').textContent = emoji;
+
+            }
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+            const mobileNav = document.getElementById('mobile-nav');
+
+            function changeActiveLink() {
+                let index = sections.length;
+                while(--index && window.scrollY + 100 < sections[index].offsetTop) {}
+                navLinks.forEach((link) => link.classList.remove('active'));
+                const activeLink = document.querySelector(`.nav-link[href="#${sections[index].id}"]`);
+                if(activeLink) {
+                    activeLink.classList.add('active');
+                }
+            }
+
+            window.addEventListener('scroll', changeActiveLink);
+            changeActiveLink();
+            
+            mobileNav.addEventListener('change', (e) => {
+                const targetId = e.target.value;
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+
+
+            loadQuestion();
+
+        });
+    </script>
+</body>
+</html>

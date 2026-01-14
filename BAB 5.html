@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materi Interaktif: Media & Jaringan Telekomunikasi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutrals (Slate, Zinc, Sky) -->
+    <!-- Application Structure Plan: Desain aplikasi ini menggunakan navigasi sidebar tetap di sebelah kiri dan area konten utama di sebelah kanan. Struktur ini dipilih untuk memfasilitasi navigasi yang mudah antar topik pembelajaran yang kompleks, memungkinkan siswa untuk beralih antar materi tanpa kehilangan konteks. Alur pengguna dimulai dari halaman pengantar, kemudian bebas menjelajahi setiap topik melalui sidebar. Setiap bagian konten dirancang untuk menjadi unit pembelajaran mandiri dengan elemen interaktif untuk memperdalam pemahaman. Rangkuman dan asesmen berada di akhir untuk konsolidasi dan evaluasi. Struktur ini sangat efektif untuk konten edukasi karena meniru format buku atau modul digital yang familiar bagi siswa. -->
+    <!-- Visualization & Content Choices: 
+        - TCP/IP: Tujuannya adalah menjelaskan arsitektur berlapis. Disajikan sebagai diagram interaktif (HTML/CSS/JS) di mana setiap lapisan dapat diklik untuk menampilkan detail. Ini lebih menarik daripada teks biasa.
+        - Layanan Jaringan: Tujuannya adalah menginformasikan berbagai layanan. Menggunakan layout kartu (card grid) yang responsif. Setiap kartu mewakili satu layanan dan dapat diklik untuk detail, mengorganisir informasi secara visual.
+        - Keamanan Jaringan: Tujuannya adalah membandingkan ancaman dan solusi. Menggunakan diagram batang (Chart.js) untuk visualisasi perbandingan prevalensi ancaman, dilengkapi komponen interaktif (HTML/JS) untuk menampilkan solusi dari ancaman yang dipilih. Ini membantu siswa memahami hubungan sebab-akibat.
+        - Sistem Transmisi (Seluler, Microwave, VSAT, Optik, WLAN): Tujuannya adalah membandingkan karakteristik teknologi. Sebuah Radar Chart dinamis (Chart.js) digunakan agar siswa dapat memilih teknologi yang ingin dibandingkan berdasarkan parameter (kecepatan, jangkauan, biaya). Ini mendorong pembelajaran aktif dan analitis.
+        - Rangkuman & Asesmen: Tujuannya adalah mengkonsolidasi dan menguji pengetahuan. Disajikan dalam format teks dan soal uraian interaktif dengan tombol "Tampilkan Jawaban", format standar yang efektif untuk e-learning.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .sidebar-item {
+            transition: all 0.2s ease-in-out;
+        }
+        .sidebar-item.active {
+            background-color: #0284c7; /* sky-600 */
+            color: white;
+            border-left-width: 4px;
+            border-color: #f59e0b; /* amber-500 */
+        }
+        .sidebar-item:not(.active):hover {
+            background-color: #e2e8f0; /* slate-200 */
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .tcp-layer {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .tcp-layer:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .service-card, .assessment-question {
+            transition: all 0.3s ease;
+        }
+        .service-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .tech-card {
+            border-width: 2px;
+            border-style: solid;
+            transition: all 0.2s;
+        }
+        .tech-card.selected {
+            border-color: #0284c7; /* sky-600 */
+            box-shadow: 0 0 15px rgba(2, 132, 199, 0.3);
+        }
+        #answer-container .answer {
+            display: none;
+            background-color: #f1f5f9; /* slate-100 */
+        }
+        #answer-container .answer.visible {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) { 
+            .chart-container { 
+                height: 400px; 
+            }
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div class="flex h-screen bg-slate-100">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 bg-white shadow-md flex-shrink-0">
+            <div class="p-4 bg-sky-700 text-white text-center">
+                <h1 class="text-xl font-bold">Jaringan Telekomunikasi</h1>
+                <p class="text-sm">Materi Kelas 10 SMK</p>
+            </div>
+            <nav id="nav-menu" class="mt-4">
+                <a href="#" data-target="intro" class="sidebar-item active flex items-center py-3 px-4 text-slate-700">
+                    <span class="mr-3">👋</span> Pengantar
+                </a>
+                <a href="#" data-target="tcpip" class="sidebar-item flex items-center py-3 px-4 text-slate-700">
+                    <span class="mr-3">🔗</span> Sistem TCP/IP
+                </a>
+                <a href="#" data-target="services" class="sidebar-item flex items-center py-3 px-4 text-slate-700">
+                    <span class="mr-3">🌐</span> Layanan Jaringan
+                </a>
+                <a href="#" data-target="security" class="sidebar-item flex items-center py-3 px-4 text-slate-700">
+                    <span class="mr-3">🛡️</span> Keamanan Jaringan
+                </a>
+                <a href="#" data-target="transmission" class="sidebar-item flex items-center py-3 px-4 text-slate-700">
+                    <span class="mr-3">📡</span> Sistem Transmisi
+                </a>
+                <a href="#" data-target="summary" class="sidebar-item flex items-center py-3 px-4 text-slate-700">
+                    <span class="mr-3">📜</span> Rangkuman
+                </a>
+                <a href="#" data-target="assessment" class="sidebar-item flex items-center py-3 px-4 text-slate-700">
+                    <span class="mr-3">✍️</span> Asesmen
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 lg:p-10 overflow-y-auto">
+
+            <!-- Intro Section -->
+            <section id="intro" class="content-section active">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Selamat Datang di Modul Interaktif!</h2>
+                <p class="text-lg text-slate-600 mb-6">
+                    Modul ini dirancang untuk membantumu memahami konsep-konsep dasar media dan jaringan telekomunikasi. Gunakan menu di sebelah kiri untuk menjelajahi setiap topik. Setiap bagian dilengkapi dengan penjelasan dan elemen interaktif untuk membuat belajar lebih menyenangkan dan efektif.
+                </p>
+                <div class="bg-amber-100 border-l-4 border-amber-500 text-amber-700 p-4 rounded-md">
+                    <p class="font-bold">Tujuan Pembelajaran:</p>
+                    <ul class="list-disc list-inside mt-2">
+                        <li>Memahami arsitektur dan cara kerja TCP/IP.</li>
+                        <li>Mengenal berbagai layanan penting dalam jaringan.</li>
+                        <li>Mengetahui dasar-dasar keamanan jaringan komputer.</li>
+                        <li>Membedakan berbagai teknologi transmisi nirkabel dan kabel.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- TCP/IP Section -->
+            <section id="tcpip" class="content-section">
+                <h2 class="text-3xl font-bold text-sky-700 mb-2">Sistem TCP/IP</h2>
+                <p class="text-slate-600 mb-6">TCP/IP (Transmission Control Protocol/Internet Protocol) adalah serangkaian protokol komunikasi yang menjadi fondasi internet. Model ini terdiri dari 4 lapisan. Klik setiap lapisan untuk melihat fungsinya.</p>
+                
+                <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4 mb-6">
+                    <div data-layer="4" class="tcp-layer w-full md:w-1/4 p-4 bg-white rounded-lg shadow-md text-center border-t-4 border-teal-500">
+                        <h3 class="font-bold text-lg">4. Application Layer</h3>
+                    </div>
+                    <div class="text-2xl text-slate-400">↑↓</div>
+                    <div data-layer="3" class="tcp-layer w-full md:w-1/4 p-4 bg-white rounded-lg shadow-md text-center border-t-4 border-cyan-500">
+                        <h3 class="font-bold text-lg">3. Transport Layer</h3>
+                    </div>
+                    <div class="text-2xl text-slate-400">↑↓</div>
+                    <div data-layer="2" class="tcp-layer w-full md:w-1/4 p-4 bg-white rounded-lg shadow-md text-center border-t-4 border-sky-500">
+                        <h3 class="font-bold text-lg">2. Internet Layer</h3>
+                    </div>
+                    <div class="text-2xl text-slate-400">↑↓</div>
+                    <div data-layer="1" class="tcp-layer w-full md:w-1/4 p-4 bg-white rounded-lg shadow-md text-center border-t-4 border-indigo-500">
+                        <h3 class="font-bold text-lg">1. Network Access</h3>
+                    </div>
+                </div>
+
+                <div id="tcp-details" class="p-6 bg-white rounded-lg shadow-inner">
+                    <p class="text-slate-500 text-center">Pilih salah satu lapisan di atas untuk melihat detailnya.</p>
+                </div>
+            </section>
+
+            <!-- Services Section -->
+            <section id="services" class="content-section">
+                <h2 class="text-3xl font-bold text-sky-700 mb-2">Sistem Layanan Jaringan</h2>
+                <p class="text-slate-600 mb-6">Jaringan komputer menyediakan berbagai layanan untuk mempermudah komunikasi dan berbagi sumber daya. Berikut adalah beberapa layanan yang paling umum.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="service-card bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-sky-600 mb-2">DNS (Domain Name System)</h3>
+                        <p>Berfungsi menerjemahkan nama domain (contoh: google.com) menjadi alamat IP (contoh: 172.217.170.142) yang dapat dimengerti oleh komputer. Ibarat buku telepon untuk internet.</p>
+                    </div>
+                    <div class="service-card bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-sky-600 mb-2">DHCP (Dynamic Host Configuration Protocol)</h3>
+                        <p>Memberikan alamat IP secara otomatis kepada perangkat yang terhubung ke jaringan. Ini menyederhanakan administrasi jaringan karena tidak perlu mengatur IP setiap perangkat secara manual.</p>
+                    </div>
+                    <div class="service-card bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-sky-600 mb-2">HTTP/HTTPS (Hypertext Transfer Protocol/Secure)</h3>
+                        <p>Protokol yang digunakan untuk mentransfer data di World Wide Web (WWW). HTTPS adalah versi amannya yang mengenkripsi data, ditandai dengan ikon gembok di browser.</p>
+                    </div>
+                    <div class="service-card bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-sky-600 mb-2">FTP (File Transfer Protocol)</h3>
+                        <p>Digunakan untuk mentransfer file dari satu komputer ke komputer lain melalui jaringan. Sering dipakai untuk mengunggah file website ke server hosting.</p>
+                    </div>
+                    <div class="service-card bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-sky-600 mb-2">Email Services (SMTP, POP3, IMAP)</h3>
+                        <p>Terdiri dari beberapa protokol: SMTP untuk mengirim email, POP3 dan IMAP untuk menerima dan menyimpan email di perangkat klien.</p>
+                    </div>
+                     <div class="service-card bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-sky-600 mb-2">Proxy Server</h3>
+                        <p>Bertindak sebagai perantara antara pengguna dan internet. Fungsinya bisa untuk filtering konten, meningkatkan keamanan, atau mempercepat akses dengan caching.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security Section -->
+            <section id="security" class="content-section">
+                <h2 class="text-3xl font-bold text-sky-700 mb-2">Sistem Keamanan Jaringan</h2>
+                <p class="text-slate-600 mb-6">Keamanan jaringan sangat penting untuk melindungi data dari akses tidak sah. Ini melibatkan perlindungan terhadap berbagai ancaman. Berikut adalah beberapa ancaman umum dan cara penanggulangannya.</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold mb-4 text-center">Prevalensi Ancaman Jaringan Umum</h3>
+                        <div class="chart-container h-64 md:h-80">
+                           <canvas id="securityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold mb-4">Ancaman & Solusi</h3>
+                        <label for="threat-selector" class="block mb-2 font-medium">Pilih Ancaman:</label>
+                        <select id="threat-selector" class="w-full p-2 border border-slate-300 rounded-md mb-4">
+                            <option value="malware">Malware (Virus, Ransomware)</option>
+                            <option value="phishing">Phishing</option>
+                            <option value="ddos">DDoS Attack</option>
+                            <option value="unauthorized">Unauthorized Access</option>
+                        </select>
+                        <div id="solution-box" class="bg-sky-50 p-4 rounded-md border border-sky-200">
+                            <h4 class="font-bold text-sky-800">Solusi:</h4>
+                            <p id="solution-text" class="text-sky-900 mt-2"></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Transmission Systems Section -->
+            <section id="transmission" class="content-section">
+                <h2 class="text-3xl font-bold text-sky-700 mb-2">Sistem Transmisi Data</h2>
+                <p class="text-slate-600 mb-6">Data ditransmisikan melalui berbagai media, baik menggunakan kabel (guided) maupun nirkabel (unguided). Pilih teknologi di bawah untuk membandingkan karakteristiknya pada diagram radar.</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold mb-4">Pilih Teknologi untuk Dibandingkan</h3>
+                        <div id="tech-selector" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            <!-- Tech cards will be inserted by JS -->
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold mb-4 text-center">Diagram Perbandingan Teknologi</h3>
+                         <div class="chart-container h-80 md:h-96">
+                           <canvas id="techComparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                 <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold mb-4">Detail Teknologi</h3>
+                    <div id="tech-details-container" class="space-y-4">
+                       <p class="text-slate-500 text-center">Pilih salah satu teknologi di atas untuk melihat deskripsinya di sini.</p>
+                    </div>
+                 </div>
+            </section>
+
+            <!-- Summary Section -->
+            <section id="summary" class="content-section">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Rangkuman</h2>
+                <div class="space-y-4 text-slate-700 bg-white p-6 rounded-lg shadow-md">
+                    <p><strong>TCP/IP</strong> adalah model 4 lapis (Network Access, Internet, Transport, Application) yang menjadi dasar komunikasi di internet, memastikan data terkirim dengan benar dan sampai ke aplikasi yang tepat.</p>
+                    <p><strong>Layanan Jaringan</strong> seperti DNS, DHCP, dan HTTP adalah servis-servis penting yang berjalan di atas TCP/IP untuk membuat jaringan lebih fungsional dan mudah digunakan, misalnya menerjemahkan nama domain dan memberikan IP otomatis.</p>
+                    <p><strong>Keamanan Jaringan</strong> adalah upaya melindungi jaringan dari ancaman seperti malware, phishing, dan DDoS. Solusinya meliputi penggunaan Antivirus, Firewall, Enkripsi, dan kesadaran pengguna.</p>
+                    <p><strong>Sistem Transmisi</strong> sangat beragam. <strong>Sistem Seluler</strong> menyediakan mobilitas luas. <strong>WLAN (Wi-Fi)</strong> ideal untuk akses nirkabel lokal. <strong>Sistem Optik (Fiber Optic)</strong> menawarkan kecepatan dan kapasitas tertinggi untuk backbone. <strong>Microwave</strong> dan <strong>VSAT</strong> digunakan untuk komunikasi jarak jauh di mana kabel tidak praktis.</p>
+                    <p>Setiap teknologi transmisi memiliki keunggulan dan kelemahan dalam hal <strong>kecepatan, jangkauan, biaya, dan keandalan</strong>, sehingga pemilihannya tergantung pada kebutuhan spesifik aplikasi.</p>
+                </div>
+            </section>
+
+            <!-- Assessment Section -->
+            <section id="assessment" class="content-section">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Asesmen Pembelajaran</h2>
+                <p class="text-slate-600 mb-6">Jawablah pertanyaan-pertanyaan berikut untuk menguji pemahamanmu terhadap materi yang telah dipelajari. Klik tombol untuk melihat kunci jawaban.</p>
+                
+                <div class="space-y-6" id="answer-container">
+                    <div class="assessment-question bg-white p-6 rounded-lg shadow-md">
+                        <p class="font-semibold mb-2">1. Jelaskan fungsi dari setiap lapisan pada model TCP/IP, mulai dari lapisan terbawah hingga teratas!</p>
+                        <button data-answer="1" class="show-answer-btn mt-2 bg-sky-600 text-white px-4 py-2 rounded-md hover:bg-sky-700 transition">Tampilkan Jawaban</button>
+                        <div id="answer-1" class="answer mt-4 p-4 rounded-md border border-slate-200">
+                            <p><strong>Network Access Layer:</strong> Bertanggung jawab untuk mengirimkan data melalui media fisik jaringan (misalnya kabel Ethernet, Wi-Fi).<br>
+                            <strong>Internet Layer:</strong> Bertugas untuk pengalamatan logis (IP Address) dan routing (menentukan jalur terbaik) paket data di seluruh jaringan.<br>
+                            <strong>Transport Layer:</strong> Menyediakan komunikasi antar proses (aplikasi) dan memastikan pengiriman data yang andal (menggunakan TCP) atau cepat (menggunakan UDP).<br>
+                            <strong>Application Layer:</strong> Menyediakan antarmuka bagi aplikasi pengguna untuk mengakses layanan jaringan (misalnya HTTP untuk browsing, SMTP untuk email).</p>
+                        </div>
+                    </div>
+
+                    <div class="assessment-question bg-white p-6 rounded-lg shadow-md">
+                        <p class="font-semibold mb-2">2. Apa perbedaan mendasar antara layanan DNS dan DHCP dalam sebuah jaringan komputer? Mengapa keduanya penting?</p>
+                        <button data-answer="2" class="show-answer-btn mt-2 bg-sky-600 text-white px-4 py-2 rounded-md hover:bg-sky-700 transition">Tampilkan Jawaban</button>
+                        <div id="answer-2" class="answer mt-4 p-4 rounded-md border border-slate-200">
+                            <p><strong>Perbedaan:</strong> DNS menerjemahkan nama domain menjadi alamat IP, sementara DHCP memberikan alamat IP secara otomatis ke perangkat. DNS ibarat "buku telepon", DHCP ibarat "petugas yang memberikan nomor rumah".<br>
+                            <strong>Pentingnya:</strong> Keduanya penting untuk otomasi dan kemudahan penggunaan. Tanpa DNS, kita harus menghafal alamat IP. Tanpa DHCP, administrator harus mengatur IP setiap perangkat secara manual, yang tidak efisien.</p>
+                        </div>
+                    </div>
+
+                    <div class="assessment-question bg-white p-6 rounded-lg shadow-md">
+                        <p class="font-semibold mb-2">3. Jelaskan tiga jenis ancaman keamanan jaringan yang berbeda dan sebutkan satu cara untuk menanggulangi masing-masing ancaman tersebut!</p>
+                         <button data-answer="3" class="show-answer-btn mt-2 bg-sky-600 text-white px-4 py-2 rounded-md hover:bg-sky-700 transition">Tampilkan Jawaban</button>
+                        <div id="answer-3" class="answer mt-4 p-4 rounded-md border border-slate-200">
+                            <p>1. <strong>Ancaman: Malware (misal: Ransomware)</strong> - Perangkat lunak jahat yang mengenkripsi data dan meminta tebusan. <strong>Solusi:</strong> Menggunakan Antivirus yang ter-update dan melakukan backup data secara berkala.<br>
+                            2. <strong>Ancaman: Phishing</strong> - Upaya menipu pengguna untuk mendapatkan informasi sensitif (seperti password) dengan menyamar sebagai pihak tepercaya. <strong>Solusi:</strong> Edukasi pengguna untuk tidak mengklik link atau lampiran yang mencurigakan.<br>
+                            3. <strong>Ancaman: Serangan DDoS</strong> - Membanjiri server dengan lalu lintas data palsu sehingga layanan menjadi tidak dapat diakses. <strong>Solusi:</strong> Menggunakan layanan proteksi DDoS atau mengkonfigurasi Firewall untuk memfilter lalu lintas berbahaya.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="assessment-question bg-white p-6 rounded-lg shadow-md">
+                        <p class="font-semibold mb-2">4. Bandingkan sistem transmisi Fiber Optik dengan sistem WLAN (Wi-Fi) berdasarkan kecepatan, jangkauan, dan mobilitas!</p>
+                         <button data-answer="4" class="show-answer-btn mt-2 bg-sky-600 text-white px-4 py-2 rounded-md hover:bg-sky-700 transition">Tampilkan Jawaban</button>
+                        <div id="answer-4" class="answer mt-4 p-4 rounded-md border border-slate-200">
+                            <p><strong>Fiber Optik:</strong><br>
+                            - <strong>Kecepatan:</strong> Sangat tinggi (Gbps hingga Tbps).<br>
+                            - <strong>Jangkauan:</strong> Sangat jauh (puluhan hingga ribuan kilometer).<br>
+                            - <strong>Mobilitas:</strong> Rendah (statis, karena menggunakan kabel fisik).<br>
+                            <strong>WLAN (Wi-Fi):</strong><br>
+                            - <strong>Kecepatan:</strong> Cukup tinggi (Mbps hingga Gbps), tetapi lebih rendah dari Fiber Optik.<br>
+                            - <strong>Jangkauan:</strong> Terbatas (beberapa puluh meter).<br>
+                            - <strong>Mobilitas:</strong> Tinggi (pengguna bisa bergerak bebas dalam area jangkauan).</p>
+                        </div>
+                    </div>
+
+                    <div class="assessment-question bg-white p-6 rounded-lg shadow-md">
+                        <p class="font-semibold mb-2">5. Dalam situasi apa penggunaan sistem VSAT IP lebih diutamakan dibandingkan menggunakan jaringan seluler atau kabel?</p>
+                         <button data-answer="5" class="show-answer-btn mt-2 bg-sky-600 text-white px-4 py-2 rounded-md hover:bg-sky-700 transition">Tampilkan Jawaban</button>
+                        <div id="answer-5" class="answer mt-4 p-4 rounded-md border border-slate-200">
+                            <p>Penggunaan sistem VSAT IP lebih diutamakan di lokasi-lokasi terpencil atau rural di mana infrastruktur jaringan kabel (seperti fiber optik atau tembaga) tidak tersedia dan sinyal jaringan seluler juga lemah atau tidak ada sama sekali. Contohnya adalah di daerah pertambangan, perkebunan di pedalaman, anjungan lepas pantai, atau untuk menyediakan konektivitas internet di desa-desa terpencil.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('#nav-menu a');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            const tcpLayers = document.querySelectorAll('.tcp-layer');
+            const tcpDetails = document.getElementById('tcp-details');
+
+            const securityChartCanvas = document.getElementById('securityChart');
+            const threatSelector = document.getElementById('threat-selector');
+            const solutionText = document.getElementById('solution-text');
+            
+            const techSelector = document.getElementById('tech-selector');
+            const techChartCanvas = document.getElementById('techComparisonChart');
+            const techDetailsContainer = document.getElementById('tech-details-container');
+
+            const showAnswerButtons = document.querySelectorAll('.show-answer-btn');
+
+            let securityChartInstance;
+            let techChartInstance;
+
+            const tcpLayerData = {
+                '4': {
+                    title: '4. Application Layer',
+                    desc: 'Lapisan ini paling dekat dengan pengguna. Menyediakan layanan jaringan untuk aplikasi seperti web browser (HTTP), email (SMTP), dan transfer file (FTP). Ini adalah antarmuka antara aplikasi dan jaringan.',
+                    color: 'teal'
+                },
+                '3': {
+                    title: '3. Transport Layer',
+                    desc: 'Bertugas untuk menyediakan komunikasi dari satu proses ke proses lain. Lapisan ini memiliki dua protokol utama: TCP (andal, berorientasi koneksi) dan UDP (cepat, tanpa koneksi). Mengatur segmentasi data dan flow control.',
+                    color: 'cyan'
+                },
+                '2': {
+                    title: '2. Internet Layer',
+                    desc: 'Bertanggung jawab untuk pengalamatan logis (IP Address) dan routing paket data melalui jaringan. Protokol utamanya adalah IP (Internet Protocol). Menentukan jalur terbaik untuk pengiriman data.',
+                    color: 'sky'
+                },
+                '1': {
+                    title: '1. Network Access Layer',
+                    desc: 'Juga dikenal sebagai Link Layer. Bertugas mengirimkan data melalui media fisik jaringan. Menangani pengalamatan fisik (MAC Address) dan mendefinisikan bagaimana bit ditransmisikan, misalnya melalui kabel Ethernet atau sinyal Wi-Fi.',
+                    color: 'indigo'
+                }
+            };
+
+            const securityData = {
+                labels: ['Malware', 'Phishing', 'Serangan DDoS', 'Pencurian Data', 'Akses Ilegal'],
+                threatLevels: [85, 78, 60, 72, 65]
+            };
+
+            const solutions = {
+                malware: 'Gunakan perangkat lunak Antivirus/Antimalware yang ter-update, jangan mengunduh file dari sumber yang tidak terpercaya, dan lakukan pemindaian secara berkala.',
+                phishing: 'Verifikasi pengirim email, jangan klik tautan yang mencurigakan, dan aktifkan autentikasi dua faktor (2FA) pada akun-akun penting.',
+                ddos: 'Gunakan Firewall dengan konfigurasi yang tepat, layanan proteksi DDoS dari penyedia cloud, dan monitoring lalu lintas jaringan secara aktif.',
+                unauthorized: 'Terapkan kebijakan kata sandi yang kuat, gunakan kontrol akses berbasis peran (RBAC), dan enkripsi data sensitif baik saat disimpan maupun saat transit.'
+            };
+            
+            const transmissionTechData = {
+                'Seluler': { scores: [7, 9, 6, 8, 7], desc: 'Jaringan seluler (4G/5G) menggunakan menara BTS untuk cakupan yang luas. Ideal untuk perangkat mobile karena mobilitasnya yang tinggi. Kecepatan bervariasi tergantung pada sinyal dan kepadatan pengguna.', color: 'rgba(239, 68, 68, 0.5)' },
+                'Microwave': { scores: [6, 8, 7, 6, 5], desc: 'Menggunakan gelombang radio frekuensi tinggi untuk komunikasi point-to-point. Sering digunakan sebagai backbone antar kota atau untuk menghubungkan lokasi yang sulit dijangkau kabel.', color: 'rgba(249, 115, 22, 0.5)' },
+                'VSAT IP': { scores: [5, 10, 8, 7, 4], desc: 'Very Small Aperture Terminal (VSAT) menggunakan satelit untuk jangkauan global. Sangat cocok untuk daerah terpencil tanpa infrastruktur darat, meskipun memiliki latensi lebih tinggi.', color: 'rgba(245, 158, 11, 0.5)' },
+                'Optik': { scores: [10, 7, 5, 10, 2], desc: 'Fiber Optik mentransmisikan data sebagai pulsa cahaya melalui serat kaca. Menawarkan kecepatan tertinggi, keamanan terbaik, dan kapasitas masif. Menjadi tulang punggung internet modern.', color: 'rgba(59, 130, 246, 0.5)' },
+                'WLAN': { scores: [8, 3, 3, 8, 9], desc: 'Wireless Local Area Network (Wi-Fi) menyediakan konektivitas nirkabel dalam jangkauan terbatas (rumah, kantor, kafe). Sangat fleksibel dan mudah diimplementasikan untuk akses lokal.', color: 'rgba(34, 197, 94, 0.5)' }
+            };
+
+            function navigateTo(targetId) {
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.dataset.target === targetId);
+                });
+                contentSections.forEach(section => {
+                    section.classList.toggle('active', section.id === targetId);
+                });
+
+                if (targetId === 'security' && !securityChartInstance) {
+                    createSecurityChart();
+                }
+                if (targetId === 'transmission' && !techChartInstance) {
+                    initTransmissionSection();
+                }
+            }
+            
+            function createSecurityChart() {
+                const ctx = securityChartCanvas.getContext('2d');
+                securityChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: securityData.labels,
+                        datasets: [{
+                            label: 'Tingkat Prevalensi (skala 1-100)',
+                            data: securityData.threatLevels,
+                            backgroundColor: [
+                                'rgba(239, 68, 68, 0.6)',
+                                'rgba(249, 115, 22, 0.6)',
+                                'rgba(245, 158, 11, 0.6)',
+                                'rgba(132, 204, 22, 0.6)',
+                                'rgba(34, 197, 94, 0.6)'
+                            ],
+                            borderColor: [
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(249, 115, 22, 1)',
+                                'rgba(245, 158, 11, 1)',
+                                'rgba(132, 204, 22, 1)',
+                                'rgba(34, 197, 94, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+
+            function updateSolution() {
+                solutionText.textContent = solutions[threatSelector.value];
+            }
+            
+            function initTransmissionSection() {
+                const techNames = Object.keys(transmissionTechData);
+                techSelector.innerHTML = '';
+                techNames.forEach(name => {
+                    const card = document.createElement('div');
+                    card.className = 'tech-card p-3 text-center rounded-lg border-slate-300 cursor-pointer';
+                    card.textContent = name;
+                    card.dataset.tech = name;
+                    techSelector.appendChild(card);
+                });
+                
+                createTechComparisonChart();
+                
+                document.querySelectorAll('.tech-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        card.classList.toggle('selected');
+                        updateTechChart();
+                        updateTechDetails();
+                    });
+                });
+            }
+            
+            function createTechComparisonChart() {
+                const ctx = techChartCanvas.getContext('2d');
+                techChartInstance = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Kecepatan', 'Jangkauan', 'Biaya', 'Keandalan', 'Mobilitas/Fleksibilitas'],
+                        datasets: []
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 10,
+                                pointLabels: {
+                                    font: { size: 10 }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+            
+            function updateTechChart() {
+                const selectedTechs = document.querySelectorAll('.tech-card.selected');
+                const newDatasets = [];
+                selectedTechs.forEach(card => {
+                    const techName = card.dataset.tech;
+                    const data = transmissionTechData[techName];
+                    newDatasets.push({
+                        label: techName,
+                        data: data.scores,
+                        backgroundColor: data.color,
+                        borderColor: data.color.replace('0.5', '1'),
+                        borderWidth: 2,
+                        pointBackgroundColor: data.color.replace('0.5', '1')
+                    });
+                });
+                techChartInstance.data.datasets = newDatasets;
+                techChartInstance.update();
+            }
+
+            function updateTechDetails() {
+                const selectedTechs = document.querySelectorAll('.tech-card.selected');
+                techDetailsContainer.innerHTML = '';
+                if(selectedTechs.length === 0){
+                    techDetailsContainer.innerHTML = '<p class="text-slate-500 text-center">Pilih salah satu teknologi di atas untuk melihat deskripsinya di sini.</p>';
+                    return;
+                }
+                selectedTechs.forEach(card => {
+                    const techName = card.dataset.tech;
+                    const data = transmissionTechData[techName];
+                    const detailElement = document.createElement('div');
+                    detailElement.className = 'bg-slate-50 p-4 rounded-lg border';
+                    detailElement.innerHTML = `<h4 class="font-bold text-sky-700">${techName}</h4><p class="mt-1">${data.desc}</p>`;
+                    techDetailsContainer.appendChild(detailElement);
+                });
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    navigateTo(link.dataset.target);
+                });
+            });
+
+            tcpLayers.forEach(layer => {
+                layer.addEventListener('click', () => {
+                    const layerNum = layer.dataset.layer;
+                    const data = tcpLayerData[layerNum];
+                    tcpDetails.innerHTML = `
+                        <h3 class="font-bold text-xl text-${data.color}-600 mb-2">${data.title}</h3>
+                        <p class="text-slate-600">${data.desc}</p>
+                    `;
+                    tcpDetails.className = `p-6 bg-white rounded-lg shadow-inner border-l-4 border-${data.color}-500`;
+                });
+            });
+
+            threatSelector.addEventListener('change', updateSolution);
+
+            showAnswerButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const answerId = button.dataset.answer;
+                    const answerDiv = document.getElementById(`answer-${answerId}`);
+                    answerDiv.classList.toggle('visible');
+                    button.textContent = answerDiv.classList.contains('visible') ? 'Sembunyikan Jawaban' : 'Tampilkan Jawaban';
+                });
+            });
+
+            navigateTo('intro');
+            updateSolution();
+
+        });
+    </script>
+</body>
+</html>

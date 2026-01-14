@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dasar Jaringan Komputer & Telekomunikasi - SMK Kelas 10</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: Saya merancang aplikasi ini dengan struktur berbasis tab (Jaringan, Telekomunikasi, Rangkuman, Asesmen) untuk memecah materi menjadi bagian-bagian yang mudah dicerna. Struktur ini dipilih karena intuitif bagi siswa dan memungkinkan navigasi yang cepat tanpa perlu menggulir halaman yang panjang. Interaksi utama berpusat pada klik tab untuk berpindah materi, klik kartu untuk melihat detail, dan tombol untuk menampilkan jawaban asesmen. Alur ini dirancang untuk pembelajaran mandiri, di mana siswa dapat menjelajahi konsep sesuai kecepatan mereka dan langsung menguji pemahaman. -->
+    <!-- Visualization & Content Choices: 
+        1. Jaringan Komputer -> Goal: Organize & Compare -> Presentation: Kartu interaktif untuk jenis jaringan dan topologi, plus diagram berbasis HTML/CSS. Interaction: Klik kartu untuk detail. Justification: Visualisasi kartu lebih menarik daripada daftar teks.
+        2. Perbandingan Jangkauan Jaringan -> Goal: Compare -> Viz: Bar Chart. Interaction: Tooltip saat hover. Justification: Chart.js memberikan perbandingan visual yang cepat dan jelas mengenai skala jangkauan LAN, MAN, dan WAN.
+        3. Proses Telekomunikasi -> Goal: Organize -> Presentation: Diagram alur sederhana menggunakan HTML/CSS. Interaction: Klik pada komponen untuk highlight. Justification: Memvisualisasikan alur mempermudah pemahaman proses dari pengirim ke penerima.
+        4. Asesmen -> Goal: Test -> Presentation: Daftar pertanyaan dengan tombol "show/hide". Interaction: Klik tombol untuk menampilkan/menyembunyikan jawaban. Justification: Mendorong evaluasi diri secara aktif.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8; /* Warm off-white */
+            color: #4A4A4A;
+        }
+        .tab-btn {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-btn.active {
+            border-bottom-color: #D57A66; /* Muted terracotta accent */
+            color: #D57A66;
+            font-weight: 600;
+        }
+        .card {
+            transition: all 0.3s ease;
+            background-color: #FFFFFF;
+            border: 1px solid #EAEAEA;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .answer-box {
+            background-color: #F7F7F7;
+            border-left: 4px solid #D57A66;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-[#3D405B]">Dasar Teknik Jaringan Komputer & Telekomunikasi</h1>
+            <p class="text-md text-gray-600 mt-2">Materi Pembelajaran Interaktif untuk SMK Kelas 10</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-gray-200 mb-8">
+            <button class="tab-btn py-4 px-6 text-lg" data-tab="jaringan">Jaringan Komputer</button>
+            <button class="tab-btn py-4 px-6 text-lg" data-tab="telekomunikasi">Telekomunikasi</button>
+            <button class="tab-btn py-4 px-6 text-lg" data-tab="rangkuman">Rangkuman</button>
+            <button class="tab-btn py-4 px-6 text-lg" data-tab="asesmen">Asesmen</button>
+        </nav>
+
+        <main>
+            <!-- Section 1: Dasar Jaringan Komputer -->
+            <section id="jaringan" class="content-section space-y-12">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-[#3D405B] mb-4">1. Apa itu Jaringan Komputer?</h2>
+                    <p class="text-lg leading-relaxed">
+                        Jaringan komputer adalah sekumpulan dua atau lebih komputer yang saling terhubung satu sama lain melalui media transmisi (kabel atau nirkabel) untuk tujuan berbagi sumber daya, seperti data, file, printer, dan koneksi internet. Tujuan utamanya adalah untuk mempermudah komunikasi dan pertukaran informasi secara efisien.
+                    </p>
+                </div>
+
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-center text-[#3D405B]">Jenis-Jenis Jaringan Berdasarkan Jangkauan</h3>
+                    <p class="text-center text-gray-600 max-w-2xl mx-auto">Klik pada setiap kartu untuk melihat penjelasan lebih detail tentang jenis-jenis jaringan komputer berdasarkan area geografis yang dicakupnya.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                        <div class="card p-6 rounded-lg cursor-pointer" data-content="pan-content">
+                            <div class="text-4xl mb-3">💻</div>
+                            <h4 class="font-bold text-lg">PAN</h4>
+                            <p class="text-gray-500 text-sm">Personal Area Network</p>
+                        </div>
+                        <div class="card p-6 rounded-lg cursor-pointer" data-content="lan-content">
+                            <div class="text-4xl mb-3">🏢</div>
+                            <h4 class="font-bold text-lg">LAN</h4>
+                            <p class="text-gray-500 text-sm">Local Area Network</p>
+                        </div>
+                        <div class="card p-6 rounded-lg cursor-pointer" data-content="man-content">
+                            <div class="text-4xl mb-3">🏙️</div>
+                            <h4 class="font-bold text-lg">MAN</h4>
+                            <p class="text-gray-500 text-sm">Metropolitan Area Network</p>
+                        </div>
+                        <div class="card p-6 rounded-lg cursor-pointer" data-content="wan-content">
+                            <div class="text-4xl mb-3">🌍</div>
+                            <h4 class="font-bold text-lg">WAN</h4>
+                            <p class="text-gray-500 text-sm">Wide Area Network</p>
+                        </div>
+                    </div>
+                    <div id="network-details" class="mt-6 bg-blue-50 p-6 rounded-lg text-center border border-blue-200" style="display: none;">
+                        <p id="pan-content" class="detail-content hidden">Jaringan skala sangat kecil yang menghubungkan perangkat pribadi seperti laptop, smartphone, dan mouse dalam jangkauan beberapa meter saja. Contohnya adalah koneksi Bluetooth.</p>
+                        <p id="lan-content" class="detail-content hidden">Jaringan yang mencakup area lokal seperti satu gedung, kantor, sekolah, atau rumah. Biasanya memiliki kecepatan transfer data yang tinggi. Contohnya adalah jaringan komputer di lab sekolah.</p>
+                        <p id="man-content" class="detail-content hidden">Jaringan yang mencakup area lebih luas dari LAN, seperti satu kota. MAN menghubungkan beberapa LAN yang terpisah secara geografis. Contohnya adalah jaringan antar kantor cabang bank dalam satu kota.</p>
+                        <p id="wan-content" class="detail-content hidden">Jaringan yang mencakup area geografis yang sangat luas, seperti negara, benua, atau bahkan seluruh dunia. Internet adalah contoh terbesar dari WAN.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-bold text-center text-[#3D405B] mb-4">Perbandingan Visual Jangkauan Jaringan</h3>
+                    <p class="text-center text-gray-600 max-w-2xl mx-auto mb-6">Grafik di bawah ini memberikan gambaran perbandingan perkiraan jangkauan area untuk LAN, MAN, dan WAN dalam skala logaritmik untuk visualisasi yang lebih baik.</p>
+                    <div class="chart-container">
+                        <canvas id="networkChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-center text-[#3D405B]">Topologi Jaringan</h3>
+                    <p class="text-center text-gray-600 max-w-2xl mx-auto">Topologi adalah cara atau struktur bagaimana komputer-komputer dalam jaringan saling terhubung. Klik pada salah satu topologi untuk melihat deskripsinya.</p>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <button class="topology-btn bg-gray-200 hover:bg-[#D57A66] hover:text-white text-gray-800 font-semibold py-2 px-4 rounded-full transition" data-content="bus-topo">Bus</button>
+                        <button class="topology-btn bg-gray-200 hover:bg-[#D57A66] hover:text-white text-gray-800 font-semibold py-2 px-4 rounded-full transition" data-content="star-topo">Star</button>
+                        <button class="topology-btn bg-gray-200 hover:bg-[#D57A66] hover:text-white text-gray-800 font-semibold py-2 px-4 rounded-full transition" data-content="ring-topo">Ring</button>
+                        <button class="topology-btn bg-gray-200 hover:bg-[#D57A66] hover:text-white text-gray-800 font-semibold py-2 px-4 rounded-full transition" data-content="mesh-topo">Mesh</button>
+                    </div>
+                    <div id="topology-details" class="mt-6 bg-gray-50 p-6 rounded-lg" style="display:none;">
+                        <p id="bus-topo" class="detail-topo hidden">Semua komputer terhubung pada satu kabel utama (bus). Kelebihannya adalah hemat kabel, namun jika kabel utama rusak, seluruh jaringan akan mati.</p>
+                        <p id="star-topo" class="detail-topo hidden">Semua komputer terhubung ke satu perangkat pusat (hub/switch). Kelebihannya adalah jika satu komputer rusak, yang lain tidak terpengaruh. Kelemahannya, jika perangkat pusat rusak, seluruh jaringan mati.</p>
+                        <p id="ring-topo" class="detail-topo hidden">Setiap komputer terhubung ke dua komputer lainnya, membentuk lingkaran atau cincin. Data dikirim searah dalam cincin. Kerusakan satu node bisa mengganggu seluruh aliran data.</p>
+                        <p id="mesh-topo" class="detail-topo hidden">Setiap komputer terhubung ke semua komputer lain dalam jaringan. Topologi ini sangat andal (redundant) tetapi membutuhkan banyak kabel dan biaya yang mahal.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Dasar Telekomunikasi -->
+            <section id="telekomunikasi" class="content-section space-y-12">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-[#3D405B] mb-4">2. Apa itu Telekomunikasi?</h2>
+                    <p class="text-lg leading-relaxed">
+                        Telekomunikasi adalah proses pertukaran informasi antara dua pihak atau lebih dari jarak jauh melalui media elektronik. Dalam konteks jaringan, telekomunikasi adalah fondasi yang memungkinkan data dikirim dari satu komputer ke komputer lain, baik melalui kabel tembaga, serat optik, maupun gelombang radio (nirkabel).
+                    </p>
+                </div>
+                
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-center text-[#3D405B]">Komponen Dasar Komunikasi Data</h3>
+                    <p class="text-center text-gray-600 max-w-2xl mx-auto">Setiap proses komunikasi data, sekecil apapun, selalu melibatkan komponen-komponen dasar berikut ini.</p>
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-4 text-center p-4">
+                        <div class="card p-4 rounded-lg w-full md:w-1/5">
+                            <div class="text-2xl">📤</div>
+                            <h4 class="font-bold">Pengirim (Sender)</h4>
+                            <p class="text-sm">Pihak yang membuat dan mengirimkan informasi.</p>
+                        </div>
+                        <div class="text-3xl text-gray-400 font-mono self-center">&rarr;</div>
+                        <div class="card p-4 rounded-lg w-full md:w-1/5">
+                             <div class="text-2xl">📡</div>
+                            <h4 class="font-bold">Media Transmisi</h4>
+                            <p class="text-sm">Jalur fisik atau non-fisik tempat data berjalan.</p>
+                        </div>
+                         <div class="text-3xl text-gray-400 font-mono self-center">&rarr;</div>
+                        <div class="card p-4 rounded-lg w-full md:w-1/5">
+                             <div class="text-2xl">📥</div>
+                            <h4 class="font-bold">Penerima (Receiver)</h4>
+                            <p class="text-sm">Pihak yang dituju dan menerima informasi.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-xl font-bold text-[#3D405B] mb-3">Sinyal Analog</h3>
+                        <p class="mb-4">Sinyal kontinu berbentuk gelombang sinus. Contohnya adalah suara manusia atau sinyal radio AM/FM. Sinyal ini rentan terhadap gangguan (noise) yang bisa mengubah bentuknya.</p>
+                        <div class="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center">
+                           <canvas id="analogSignal"></canvas>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-xl font-bold text-[#3D405B] mb-3">Sinyal Digital</h3>
+                        <p class="mb-4">Sinyal diskrit yang hanya memiliki dua nilai, biasanya direpresentasikan sebagai 1 dan 0 (on/off). Komputer menggunakan sinyal digital. Sinyal ini lebih tahan terhadap noise.</p>
+                        <div class="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center">
+                             <canvas id="digitalSignal"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section 3: Rangkuman -->
+            <section id="rangkuman" class="content-section space-y-8">
+                 <div class="bg-white p-8 rounded-lg shadow-sm border-l-4 border-[#D57A66]">
+                    <h2 class="text-2xl font-bold text-[#3D405B] mb-4">3. Rangkuman Materi</h2>
+                    <div class="space-y-4 text-lg">
+                        <p>🔹 <strong>Jaringan Komputer</strong> adalah koneksi antar komputer untuk berbagi sumber daya dan informasi.</p>
+                        <p>🔹 Jenis jaringan berdasarkan jangkauan meliputi <strong>PAN</strong> (personal), <strong>LAN</strong> (lokal), <strong>MAN</strong> (kota), dan <strong>WAN</strong> (luas/dunia).</p>
+                        <p>🔹 <strong>Topologi Jaringan</strong> (Bus, Star, Ring, Mesh) adalah arsitektur atau struktur fisik koneksi dalam jaringan.</p>
+                        <p>🔹 <strong>Telekomunikasi</strong> adalah proses pengiriman informasi jarak jauh melalui media elektronik, yang menjadi dasar dari jaringan komputer.</p>
+                        <p>🔹 Komunikasi data membutuhkan <strong>pengirim, media transmisi,</strong> dan <strong>penerima</strong>.</p>
+                        <p>🔹 Data dikirim dalam bentuk <strong>sinyal</strong>, yang bisa berupa <strong>analog</strong> (kontinu) atau <strong>digital</strong> (diskrit/1 dan 0).</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Asesmen -->
+            <section id="asesmen" class="content-section space-y-6">
+                <h2 class="text-2xl font-bold text-center text-[#3D405B] mb-4">4. Asesmen Pembelajaran</h2>
+                <p class="text-center text-gray-600 max-w-2xl mx-auto mb-8">Uji pemahamanmu dengan menjawab pertanyaan-pertanyaan di bawah ini. Klik tombol untuk melihat kunci jawaban.</p>
+                <div class="space-y-6">
+                    <!-- Soal 1 -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h4 class="text-lg font-semibold mb-2">Soal 1:</h4>
+                        <p class="mb-4">Jelaskan perbedaan mendasar antara jaringan LAN, MAN, dan WAN, serta berikan masing-masing satu contoh penerapannya!</p>
+                        <button class="toggle-answer bg-[#D57A66] text-white py-2 px-4 rounded-lg hover:bg-[#b86452] transition">Tampilkan Jawaban</button>
+                        <div class="answer-box mt-4 p-4 rounded-md hidden">
+                            <p><strong>Kunci Jawaban:</strong><br>
+                            Perbedaan utamanya terletak pada <strong>jangkauan geografis</strong>.<br>
+                            - <strong>LAN (Local Area Network):</strong> Jangkauan kecil (satu gedung). Contoh: Jaringan komputer di laboratorium sekolah.<br>
+                            - <strong>MAN (Metropolitan Area Network):</strong> Jangkauan menengah (satu kota). Contoh: Jaringan yang menghubungkan beberapa kantor cabang bank di Jakarta.<br>
+                            - <strong>WAN (Wide Area Network):</strong> Jangkauan sangat luas (antar negara/benua). Contoh: Internet.</p>
+                        </div>
+                    </div>
+                    <!-- Soal 2 -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h4 class="text-lg font-semibold mb-2">Soal 2:</h4>
+                        <p class="mb-4">Dalam topologi Star, apa yang terjadi jika salah satu komputer klien mengalami kerusakan? Dan apa yang terjadi jika perangkat pusat (switch/hub) yang rusak?</p>
+                        <button class="toggle-answer bg-[#D57A66] text-white py-2 px-4 rounded-lg hover:bg-[#b86452] transition">Tampilkan Jawaban</button>
+                        <div class="answer-box mt-4 p-4 rounded-md hidden">
+                             <p><strong>Kunci Jawaban:</strong><br>
+                            - Jika <strong>satu komputer klien rusak</strong>, hanya komputer tersebut yang akan terganggu. Komputer lain dalam jaringan tetap bisa berkomunikasi karena koneksi mereka ke pusat tidak terpengaruh.<br>
+                            - Jika <strong>perangkat pusat (switch/hub) rusak</strong>, maka seluruh jaringan akan mati (lumpuh). Tidak ada komputer yang bisa berkomunikasi karena pusat koneksi telah gagal.</p>
+                        </div>
+                    </div>
+                    <!-- Soal 3 -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h4 class="text-lg font-semibold mb-2">Soal 3:</h4>
+                        <p class="mb-4">Mengapa berbagi sumber daya (resource sharing) menjadi salah satu tujuan utama dibangunnya sebuah jaringan komputer? Berikan 2 contoh sumber daya yang bisa dibagikan!</p>
+                        <button class="toggle-answer bg-[#D57A66] text-white py-2 px-4 rounded-lg hover:bg-[#b86452] transition">Tampilkan Jawaban</button>
+                        <div class="answer-box mt-4 p-4 rounded-md hidden">
+                             <p><strong>Kunci Jawaban:</strong><br>
+                            Berbagi sumber daya menjadi tujuan utama untuk <strong>efisiensi biaya dan kemudahan akses</strong>. Daripada setiap komputer harus memiliki perangkatnya sendiri, beberapa komputer bisa menggunakan satu perangkat secara bersamaan.<br>
+                            Contoh sumber daya yang bisa dibagikan:<br>
+                            1. <strong>Printer:</strong> Satu printer dapat digunakan oleh semua komputer di kantor.<br>
+                            2. <strong>File/Data:</strong> File yang disimpan di server pusat dapat diakses oleh semua pengguna yang berwenang.</p>
+                        </div>
+                    </div>
+                    <!-- Soal 4 -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h4 class="text-lg font-semibold mb-2">Soal 4:</h4>
+                        <p class="mb-4">Jelaskan secara singkat apa yang dimaksud dengan media transmisi dalam proses telekomunikasi dan berikan satu contoh media kabel dan satu contoh media nirkabel!</p>
+                        <button class="toggle-answer bg-[#D57A66] text-white py-2 px-4 rounded-lg hover:bg-[#b86452] transition">Tampilkan Jawaban</button>
+                        <div class="answer-box mt-4 p-4 rounded-md hidden">
+                             <p><strong>Kunci Jawaban:</strong><br>
+                            <strong>Media transmisi</strong> adalah jalur fisik (atau non-fisik) yang digunakan untuk mengirimkan sinyal data dari pengirim ke penerima.<br>
+                            - Contoh media kabel: <strong>Kabel UTP (Unshielded Twisted Pair) atau Serat Optik.</strong><br>
+                            - Contoh media nirkabel: <strong>Gelombang Radio (seperti pada Wi-Fi) atau Gelombang Mikro.</strong></p>
+                        </div>
+                    </div>
+                    <!-- Soal 5 -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h4 class="text-lg font-semibold mb-2">Soal 5:</h4>
+                        <p class="mb-4">Komputer beroperasi menggunakan sinyal digital. Apa kelebihan utama sinyal digital dibandingkan sinyal analog, terutama dalam konteks pengiriman data?</p>
+                        <button class="toggle-answer bg-[#D57A66] text-white py-2 px-4 rounded-lg hover:bg-[#b86452] transition">Tampilkan Jawaban</button>
+                        <div class="answer-box mt-4 p-4 rounded-md hidden">
+                             <p><strong>Kunci Jawaban:</strong><br>
+                            Kelebihan utama sinyal digital adalah <strong>lebih tahan terhadap gangguan (noise)</strong>. Karena sinyal digital hanya terdiri dari dua level (1 dan 0), gangguan kecil pada sinyal tidak akan mengubah nilainya secara signifikan. Sinyal yang diterima dapat diregenerasi kembali ke bentuk aslinya dengan sempurna. Sebaliknya, noise pada sinyal analog akan sulit dihilangkan dan dapat merusak kualitas informasi asli.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const sections = document.querySelectorAll('.content-section');
+            const networkCards = document.querySelectorAll('.card[data-content]');
+            const networkDetailsContainer = document.getElementById('network-details');
+            const detailContents = document.querySelectorAll('.detail-content');
+            const topologyBtns = document.querySelectorAll('.topology-btn');
+            const topologyDetailsContainer = document.getElementById('topology-details');
+            const detailTopos = document.querySelectorAll('.detail-topo');
+            const answerToggles = document.querySelectorAll('.toggle-answer');
+
+            function showTab(tabId) {
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                tabs.forEach(tab => {
+                    tab.classList.remove('active');
+                });
+
+                document.getElementById(tabId).classList.add('active');
+                document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+            }
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    showTab(tab.dataset.tab);
+                });
+            });
+            
+            showTab('jaringan');
+
+            networkCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const contentId = card.dataset.content;
+                    networkDetailsContainer.style.display = 'block';
+                    detailContents.forEach(content => {
+                        if (content.id === contentId) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            topologyBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                     const contentId = btn.dataset.content;
+                    topologyDetailsContainer.style.display = 'block';
+                    detailTopos.forEach(content => {
+                        if (content.id === contentId) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+            
+            answerToggles.forEach(button => {
+                button.addEventListener('click', () => {
+                    const answerBox = button.nextElementSibling;
+                    answerBox.classList.toggle('hidden');
+                    if(answerBox.classList.contains('hidden')){
+                        button.textContent = 'Tampilkan Jawaban';
+                    } else {
+                         button.textContent = 'Sembunyikan Jawaban';
+                    }
+                });
+            });
+
+            function drawSignal(canvasId, isAnalog) {
+                const canvas = document.getElementById(canvasId);
+                const ctx = canvas.getContext('2d');
+                const width = canvas.parentElement.clientWidth;
+                const height = canvas.parentElement.clientHeight;
+                canvas.width = width;
+                canvas.height = height;
+
+                ctx.strokeStyle = '#D57A66';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                if (isAnalog) {
+                    ctx.moveTo(0, height / 2);
+                    for (let i = 0; i < width; i++) {
+                        ctx.lineTo(i, height / 2 + Math.sin(i * 0.05) * (height / 2 - 10));
+                    }
+                } else {
+                    let level = height * 0.25;
+                    ctx.moveTo(0, level);
+                    const sequence = [0, 1, 1, 0, 1, 0, 0, 1, 0, 1];
+                    for (let i = 0; i < sequence.length; i++) {
+                        const newLevel = sequence[i] === 1 ? height * 0.25 : height * 0.75;
+                        ctx.lineTo(i * (width/sequence.length), level);
+                        level = newLevel;
+                        ctx.lineTo(i * (width/sequence.length), level);
+                    }
+                     ctx.lineTo(width, level);
+                }
+                ctx.stroke();
+            }
+
+            drawSignal('analogSignal', true);
+            drawSignal('digitalSignal', false);
+            
+            const chartCtx = document.getElementById('networkChart').getContext('2d');
+            new Chart(chartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['LAN (Lokal)', 'MAN (Kota)', 'WAN (Dunia)'],
+                    datasets: [{
+                        label: 'Perkiraan Jangkauan Maksimal (meter)',
+                        data: [1000, 50000, 10000000], 
+                        backgroundColor: [
+                            'rgba(131, 203, 209, 0.6)',
+                            'rgba(240, 166, 133, 0.6)',
+                            'rgba(213, 122, 102, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(131, 203, 209, 1)',
+                            'rgba(240, 166, 133, 1)',
+                            'rgba(213, 122, 102, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Jangkauan (meter) - Skala Logaritmik'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += new Intl.NumberFormat('id-ID').format(context.parsed.x) + ' m';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>

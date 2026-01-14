@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dasbor Interaktif TJKT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: Menggunakan pendekatan dasbor satu halaman dengan navigasi tab di bagian atas untuk beralih antar-topik utama (Proses Bisnis, Perkembangan Teknologi, Karir & Usaha, K3LH & Budaya Kerja). Struktur ini dipilih untuk memecah informasi kompleks menjadi bagian-bagian yang mudah dicerna dan memungkinkan pengguna untuk langsung menuju ke topik yang diminati tanpa harus menggulir halaman yang panjang. Ini mempromosikan eksplorasi non-linear dan meningkatkan pengalaman pengguna secara keseluruhan. Setiap bagian dirancang untuk menjadi interaktif untuk memaksimalkan keterlibatan. -->
+    <!-- Visualization & Content Choices: 
+        1. Proses Bisnis -> Goal: Mengorganisir -> Viz: Diagram alur interaktif (HTML/CSS) -> Interaction: Klik pada setiap tahap untuk menampilkan detail. -> Justification: Lebih menarik dan intuitif daripada daftar teks biasa untuk menjelaskan sebuah proses.
+        2. Perkembangan Teknologi -> Goal: Menunjukkan perubahan -> Viz: Grafik batang horizontal sebagai timeline (Chart.js) -> Interaction: Tooltip interaktif menampilkan info era teknologi. -> Justification: Visualisasi timeline adalah cara paling efektif untuk menampilkan evolusi dari waktu ke waktu.
+        3. Karir & Usaha -> Goal: Menginformasikan & Membandingkan -> Viz: Grid kartu yang dapat difilter (HTML/CSS/JS) & Grafik batang horizontal (Chart.js) untuk permintaan profesi. -> Interaction: Tombol filter untuk menyortir profesi berdasarkan kategori. -> Justification: Memungkinkan pengguna menjelajahi jalur karir secara interaktif. Grafik baru memberikan konteks kuantitatif tentang permintaan pasar.
+        4. K3LH & Budaya Kerja -> Goal: Menginformasikan -> Viz: Komponen akordeon (HTML/CSS/JS) -> Interaction: Klik untuk membuka dan menutup setiap topik K3LH dan 5R. -> Justification: Menghemat ruang layar dan menyajikan informasi dalam format tanya jawab yang terstruktur.
+        -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #FDFBF8; }
+        .tab-active { border-bottom-color: #A0522D; color: #A0522D; font-weight: 600; }
+        .tab-inactive { border-bottom-color: transparent; color: #6B7280; }
+        .flowchart-step { transition: all 0.3s ease; cursor: pointer; }
+        .flowchart-step.active { background-color: #A0522D; color: white; transform: scale(1.05); box-shadow: 0 4px 14px 0 rgba(160, 82, 45, 0.39); }
+        .card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .filter-btn.active { background-color: #A0522D; color: white; }
+        .filter-btn { background-color: #E5E7EB; color: #374151; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
+        .chart-container { position: relative; width: 100%; max-width: 900px; margin-left: auto; margin-right: auto; height: 300px; max-height: 40vh; }
+        @media (min-width: 768px) { .chart-container { height: 400px; max-height: 50vh; } }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Dasbor Interaktif</h1>
+            <p class="text-lg text-gray-600 mt-2">Dasar-Dasar Teknik Jaringan Komputer & Telekomunikasi (TJKT)</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-gray-200 mb-8 overflow-x-auto">
+            <div class="flex">
+                <button data-target="proses" class="nav-tab tab-active text-sm md:text-base py-3 px-4 md:px-6 border-b-2 transition whitespace-nowrap">Proses Bisnis</button>
+                <button data-target="perkembangan" class="nav-tab tab-inactive text-sm md:text-base py-3 px-4 md:px-6 border-b-2 transition whitespace-nowrap">Perkembangan Teknologi</button>
+                <button data-target="karir" class="nav-tab tab-inactive text-sm md:text-base py-3 px-4 md:px-6 border-b-2 transition whitespace-nowrap">Karir & Usaha</button>
+                <button data-target="k3lh" class="nav-tab tab-inactive text-sm md:text-base py-3 px-4 md:px-6 border-b-2 transition whitespace-nowrap">Budaya Kerja & K3LH</button>
+            </div>
+        </nav>
+
+        <main>
+            <section id="proses" class="content-section">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold mb-2 text-center">Diagram Alur Proses Bisnis TJKT</h2>
+                    <p class="text-center text-gray-600 mb-8">Setiap proyek TJKT mengikuti siklus hidup yang terstruktur untuk memastikan kualitas dan efisiensi. Klik pada setiap tahapan untuk melihat detailnya.</p>
+                    
+                    <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-2 flex-wrap">
+                        <div data-id="planning" class="flowchart-step active bg-white border border-gray-300 rounded-lg p-4 w-48 text-center shadow-sm">1. Perencanaan</div>
+                        <div class="hidden md:block w-8 h-px bg-gray-300"></div>
+                        <div data-id="design" class="flowchart-step bg-white border border-gray-300 rounded-lg p-4 w-48 text-center shadow-sm">2. Perancangan</div>
+                        <div class="hidden md:block w-8 h-px bg-gray-300"></div>
+                        <div data-id="implementation" class="flowchart-step bg-white border border-gray-300 rounded-lg p-4 w-48 text-center shadow-sm">3. Implementasi</div>
+                        <div class="hidden md:block w-8 h-px bg-gray-300"></div>
+                        <div data-id="operation" class="flowchart-step bg-white border border-gray-300 rounded-lg p-4 w-48 text-center shadow-sm">4. Operasional</div>
+                        <div class="hidden md:block w-8 h-px bg-gray-300"></div>
+                        <div data-id="optimization" class="flowchart-step bg-white border border-gray-300 rounded-lg p-4 w-48 text-center shadow-sm">5. Optimalisasi</div>
+                    </div>
+
+                    <div id="flowchart-details" class="mt-8 p-6 bg-amber-50 rounded-lg border border-amber-200 min-h-[100px]">
+                        <h3 id="details-title" class="text-xl font-semibold text-amber-800"></h3>
+                        <p id="details-desc" class="mt-2 text-amber-700"></p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="perkembangan" class="content-section hidden">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold mb-2 text-center">Lini Masa Perkembangan Teknologi TJKT</h2>
+                    <p class="text-center text-gray-600 mb-8">Teknologi jaringan berevolusi dengan cepat, dari koneksi kabel sederhana hingga era komputasi awan dan kecerdasan buatan. Jelajahi evolusi ini melalui lini masa interaktif.</p>
+                    <div class="chart-container">
+                        <canvas id="techTimelineChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="karir" class="content-section hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                    <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-md">
+                        <h2 class="text-2xl font-bold mb-2 text-center">Peluang Profesi & Usaha</h2>
+                        <p class="text-center text-gray-600 mb-6">Bidang TJKT menawarkan beragam jalur karir yang menjanjikan. Gunakan filter untuk menjelajahi berbagai peran dan peluang wirausaha.</p>
+                        <div class="flex justify-center space-x-2 mb-8 flex-wrap">
+                            <button class="filter-btn active px-4 py-2 rounded-full font-semibold text-sm m-1" data-filter="all">Semua</button>
+                            <button class="filter-btn px-4 py-2 rounded-full font-semibold text-sm m-1" data-filter="teknis">Teknis</button>
+                            <button class="filter-btn px-4 py-2 rounded-full font-semibold text-sm m-1" data-filter="keamanan">Keamanan</button>
+                            <button class="filter-btn px-4 py-2 rounded-full font-semibold text-sm m-1" data-filter="wirausaha">Wirausaha</button>
+                        </div>
+                        <div id="professions-grid" class="space-y-4"></div>
+                    </div>
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
+                        <h2 class="text-2xl font-bold mb-2 text-center">Estimasi Permintaan Pasar</h2>
+                        <p class="text-center text-gray-600 mb-6">Visualisasi ini menunjukkan tren permintaan relatif untuk setiap kategori profesi di industri TJKT saat ini.</p>
+                        <div class="chart-container h-80 max-h-[45vh]">
+                             <canvas id="demandChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="k3lh" class="content-section hidden">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold mb-8 text-center">Prinsip K3LH & Budaya Kerja Industri</h2>
+                     <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">Keselamatan dan efisiensi adalah pilar utama dalam dunia TJKT. Pahami konsep K3LH untuk mitigasi risiko dan budaya 5R untuk produktivitas maksimal.</p>
+                    <div class="space-y-4 max-w-3xl mx-auto">
+                        <div class="accordion-item border rounded-lg overflow-hidden">
+                            <button class="accordion-header w-full flex justify-between items-center p-4 font-semibold text-left bg-gray-50 hover:bg-gray-100 transition">
+                                <span>Pentingnya K3LH di Bidang TJKT</span>
+                                <span class="accordion-icon text-xl transform transition-transform duration-300">+</span>
+                            </button>
+                            <div class="accordion-content px-4 pb-4 text-gray-600">
+                                <p class="pt-2">K3LH (Keselamatan dan Kesehatan Kerja serta Lingkungan Hidup) adalah fondasi untuk menciptakan lingkungan kerja yang aman dan produktif. Di TJKT, teknisi sering berhadapan dengan risiko listrik, ketinggian, dan ergonomi. Menerapkan K3LH bukan hanya kewajiban hukum, tapi juga kunci untuk mencegah kecelakaan kerja dan menjaga keberlangsungan operasional.</p>
+                            </div>
+                        </div>
+                         <div class="accordion-item border rounded-lg overflow-hidden">
+                            <button class="accordion-header w-full flex justify-between items-center p-4 font-semibold text-left bg-gray-50 hover:bg-gray-100 transition">
+                                <span>Budaya Kerja 5R (Ringkas, Rapi, Resik, Rawat, Rajin)</span>
+                                <span class="accordion-icon text-xl transform transition-transform duration-300">+</span>
+                            </button>
+                            <div class="accordion-content px-4 pb-4 text-gray-600">
+                                <p class="pt-2">5R adalah metode manajemen visual yang membantu menciptakan ruang kerja yang terorganisir, bersih, dan efisien. Di ruang server atau area kerja teknis, 5R membantu mempercepat pencarian alat, mengurangi risiko tersandung kabel, dan memudahkan proses pemeliharaan perangkat. Ini adalah cerminan profesionalisme dan disiplin kerja.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item border rounded-lg overflow-hidden">
+                            <button class="accordion-header w-full flex justify-between items-center p-4 font-semibold text-left bg-gray-50 hover:bg-gray-100 transition">
+                                <span>Identifikasi Potensi Bahaya Umum</span>
+                                <span class="accordion-icon text-xl transform transition-transform duration-300">+</span>
+                            </button>
+                            <div class="accordion-content px-4 pb-4 text-gray-600">
+                                <ul class="list-disc list-inside space-y-2 pt-2">
+                                    <li><b>Bahaya Listrik:</b> Selalu pastikan sumber daya telah dimatikan dan gunakan alat ukur untuk verifikasi sebelum menyentuh komponen internal perangkat.</li>
+                                    <li><b>Bahaya Ketinggian:</b> Gunakan sabuk pengaman (harness) dan pastikan tangga atau pijakan stabil saat memasang perangkat di atas.</li>
+                                    <li><b>Bahaya Ergonomi:</b> Gunakan teknik mengangkat yang benar (jongkok, bukan membungkuk) saat memindahkan perangkat berat seperti server atau UPS.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const sections = document.querySelectorAll('.content-section');
+            let demandChartInstance;
+            let timelineChartInstance;
+
+            function initOrUpdateDemandChart() {
+                const demandCtx = document.getElementById('demandChart').getContext('2d');
+                const data = {
+                    labels: ['Teknis (Engineer, Admin)', 'Keamanan (Analis Siber)', 'Wirausaha (ISP, Konsultan)'],
+                    datasets: [{
+                        label: 'Estimasi Permintaan',
+                        data: [85, 75, 50],
+                        backgroundColor: ['#5F8D4E', '#A4BE7B', '#E5D9B6'],
+                        borderColor: ['#4a6f3b', '#829d60', '#d4c294'],
+                        borderWidth: 1,
+                        borderRadius: 4,
+                    }]
+                };
+                const options = {
+                    responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (context) => `${context.raw}% Permintaan Relatif` } }
+                    },
+                    scales: {
+                        x: { beginAtZero: true, max: 100, ticks: { callback: (value) => value + '%' } },
+                        y: { ticks: { font: { size: 12 } } }
+                    }
+                };
+
+                if (demandChartInstance) {
+                    demandChartInstance.data = data;
+                    demandChartInstance.options = options;
+                    demandChartInstance.update();
+                } else {
+                    demandChartInstance = new Chart(demandCtx, { type: 'bar', data, options });
+                }
+            }
+            
+            function initOrUpdateTimelineChart() {
+                 const techTimelineCtx = document.getElementById('techTimelineChart').getContext('2d');
+                 const data = {
+                    labels: ['Era LAN & WAN (80-90an)', 'Era Nirkabel (2000an)', 'Era Cloud & IoT (2010an)', 'Era AI & 5G (Sekarang)'],
+                    datasets: [{
+                        label: 'Perkembangan Teknologi TJKT',
+                        data: [10, 20, 30, 40],
+                        backgroundColor: ['#E5D9B6', '#A4BE7B', '#5F8D4E', '#285430'],
+                    }]
+                };
+                const options = {
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    const tooltips = [
+                                        'Fokus pada konektivitas kabel lokal dan antar kota.',
+                                        'Munculnya Wi-Fi dan jaringan seluler 3G/4G.',
+                                        'Layanan berbasis cloud dan perangkat pintar terhubung.',
+                                        'Jaringan ultra cepat dengan otomatisasi cerdas.'
+                                    ];
+                                    return tooltips[context.dataIndex];
+                                }
+                            }
+                        }
+                    },
+                    scales: { x: { display: false }, y: { ticks: { font: { size: 14, weight: 500 }, color: '#374151' }, grid: { display: false } } }
+                };
+                
+                if (timelineChartInstance) {
+                    timelineChartInstance.data = data;
+                    timelineChartInstance.options = options;
+                    timelineChartInstance.update();
+                } else {
+                     timelineChartInstance = new Chart(techTimelineCtx, { type: 'bar', data, options});
+                }
+            }
+
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.replace('tab-active', 'tab-inactive'));
+                    tab.classList.replace('tab-inactive', 'tab-active');
+                    
+                    const targetId = tab.dataset.target;
+                    sections.forEach(section => {
+                        section.classList.toggle('hidden', section.id !== targetId);
+                    });
+
+                    if (targetId === 'karir') initOrUpdateDemandChart();
+                    if (targetId === 'perkembangan') initOrUpdateTimelineChart();
+                });
+            });
+
+            const flowchartData = {
+                planning: { title: 'Tahap 1: Perencanaan', desc: 'Mengidentifikasi kebutuhan, melakukan survei lokasi, dan membuat estimasi anggaran awal.' },
+                design: { title: 'Tahap 2: Perancangan', desc: 'Membuat desain topologi, memilih perangkat, dan merancang skema pengalamatan IP.' },
+                implementation: { title: 'Tahap 3: Implementasi', desc: 'Melakukan instalasi fisik, konfigurasi, dan pengujian menyeluruh sistem jaringan.' },
+                operation: { title: 'Tahap 4: Operasional', desc: 'Memantau kinerja, memberikan dukungan teknis, dan melakukan pemeliharaan rutin.' },
+                optimization: { title: 'Tahap 5: Optimalisasi', desc: 'Menganalisis data penggunaan, meningkatkan kapasitas, dan membuat laporan kinerja.' }
+            };
+
+            const flowchartSteps = document.querySelectorAll('.flowchart-step');
+            const detailsTitle = document.getElementById('details-title');
+            const detailsDesc = document.getElementById('details-desc');
+            
+            function updateDetails(id) {
+                detailsTitle.textContent = flowchartData[id].title;
+                detailsDesc.textContent = flowchartData[id].desc;
+                flowchartSteps.forEach(step => step.classList.toggle('active', step.dataset.id === id));
+            }
+            flowchartSteps.forEach(step => step.addEventListener('click', () => updateDetails(step.dataset.id)));
+            updateDetails('planning');
+
+            const professionsData = [
+                { name: 'Network Engineer', category: 'teknis', desc: 'Merancang dan membangun infrastruktur jaringan skala besar.', icon: '💻' },
+                { name: 'System Administrator', category: 'teknis', desc: 'Mengelola server, OS, dan memastikan ketersediaan layanan.', icon: '🖥️' },
+                { name: 'Cybersecurity Analyst', category: 'keamanan', desc: 'Melindungi sistem dan jaringan dari ancaman siber.', icon: '🛡️' },
+                { name: 'ISP Lokal (RT/RW Net)', category: 'wirausaha', desc: 'Menyediakan layanan koneksi internet untuk komunitas.', icon: '💡' },
+                { name: 'Cloud Engineer', category: 'teknis', desc: 'Spesialis dalam merancang dan mengelola infrastruktur cloud.', icon: '☁️' },
+                { name: 'Jasa Konsultasi IT', category: 'wirausaha', desc: 'Memberikan saran ahli mengenai strategi dan solusi teknologi.', icon: '📈' },
+            ];
+
+            const grid = document.getElementById('professions-grid');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+
+            function renderProfessions(filter = 'all') {
+                grid.innerHTML = '';
+                const filteredData = filter === 'all' ? professionsData : professionsData.filter(p => p.category === filter);
+                
+                filteredData.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'card bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-start';
+                    card.innerHTML = `
+                        <div class="text-3xl mr-4 mt-1">${p.icon}</div>
+                        <div>
+                            <h3 class="font-bold text-md text-gray-800">${p.name}</h3>
+                            <p class="text-gray-600 text-sm mt-1">${p.desc}</p>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderProfessions(btn.dataset.filter);
+                });
+            });
+            renderProfessions();
+
+            document.querySelectorAll('.accordion-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('.accordion-icon');
+                    header.parentElement.classList.toggle('bg-amber-50');
+
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                        document.querySelectorAll('.accordion-icon').forEach(i => i.style.transform = 'rotate(0deg)');
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        icon.style.transform = 'rotate(45deg)';
+                    } 
+                });
+            });
+            
+            initOrUpdateTimelineChart();
+        });
+    </script>
+</body>
+</html>
+

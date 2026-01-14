@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul Interaktif: Profesi & Kewirausahaan TJKT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+    <!-- Chosen Palette: Slate (Neutral Background) + Indigo (Primary Tech) + Emerald (Success/K3LH) + Amber (Entrepreneurship) -->
+    <!-- Application Structure Plan: A Dashboard-style SPA. Left sidebar for module navigation to simulate a learning management system. Main content area updates dynamically. 
+         Structure chosen to allow linear progression or random access, typical for study materials. -->
+    <!-- Visualization & Content Choices:
+         - Job Demand Chart (Bar): To visually compare popularity of different IT roles.
+         - Business Model Chart (Scatter/Bubble): To show relationship between startup cost and potential profit.
+         - 5R Interactive List: To explain the culture step-by-step.
+         - Unicode Icons: Used instead of SVG for reliability and performance. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden">
+
+    <!-- Mobile Header -->
+    <header class="md:hidden fixed top-0 w-full bg-indigo-700 text-white z-50 p-4 flex justify-between items-center shadow-lg">
+        <h1 class="font-bold text-lg">TJKT Kelas 10</h1>
+        <button id="mobile-menu-btn" class="text-2xl focus:outline-none">☰</button>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="bg-slate-900 text-slate-300 w-64 flex-shrink-0 h-full flex flex-col transition-transform transform -translate-x-full md:translate-x-0 fixed md:relative z-40 pt-16 md:pt-0">
+        <div class="p-6 bg-slate-800">
+            <h2 class="text-xl font-bold text-white tracking-wider">DASAR TJKT</h2>
+            <p class="text-xs text-indigo-400 mt-1 uppercase font-semibold">Bab 3: Profesi & Bisnis</p>
+        </div>
+        <nav class="flex-1 overflow-y-auto no-scrollbar py-4">
+            <ul class="space-y-1">
+                <li>
+                    <button onclick="app.navigateTo('intro')" class="nav-item w-full text-left px-6 py-3 hover:bg-slate-800 hover:text-white transition-colors border-l-4 border-transparent flex items-center gap-3 active-nav" data-target="intro">
+                        <span>🏠</span> Pengantar
+                    </button>
+                </li>
+                <li>
+                    <button onclick="app.navigateTo('profesi')" class="nav-item w-full text-left px-6 py-3 hover:bg-slate-800 hover:text-white transition-colors border-l-4 border-transparent flex items-center gap-3" data-target="profesi">
+                        <span>👨‍💻</span> Profesi TJKT
+                    </button>
+                </li>
+                <li>
+                    <button onclick="app.navigateTo('wirausaha')" class="nav-item w-full text-left px-6 py-3 hover:bg-slate-800 hover:text-white transition-colors border-l-4 border-transparent flex items-center gap-3" data-target="wirausaha">
+                        <span>💼</span> Kewirausahaan
+                    </button>
+                </li>
+                <li>
+                    <button onclick="app.navigateTo('k3lh')" class="nav-item w-full text-left px-6 py-3 hover:bg-slate-800 hover:text-white transition-colors border-l-4 border-transparent flex items-center gap-3" data-target="k3lh">
+                        <span>⛑️</span> K3LH & Budaya 5R
+                    </button>
+                </li>
+                <li>
+                    <button onclick="app.navigateTo('evaluasi')" class="nav-item w-full text-left px-6 py-3 hover:bg-slate-800 hover:text-white transition-colors border-l-4 border-transparent flex items-center gap-3" data-target="evaluasi">
+                        <span>📝</span> Rangkuman & Essay
+                    </button>
+                </li>
+            </ul>
+        </nav>
+        <div class="p-4 bg-slate-800 text-xs text-center text-slate-500">
+            &copy; 2024 Modul Pembelajaran SMK
+        </div>
+    </aside>
+
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
+
+    <main class="flex-1 h-full overflow-y-auto pt-20 md:pt-0 p-6 md:p-10 scroll-smooth relative" id="main-content">
+        
+        <!-- INTRO SECTION -->
+        <section id="intro" class="content-section fade-in max-w-4xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
+                <div class="bg-indigo-600 p-8 text-white">
+                    <h1 class="text-3xl md:text-4xl font-bold mb-2">Profesi dan Kewirausahaan</h1>
+                    <p class="text-indigo-100 text-lg">Bidang Teknik Jaringan Komputer dan Telekomunikasi</p>
+                </div>
+                <div class="p-8">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">Selamat Datang di Modul Interaktif</h3>
+                    <p class="text-slate-600 mb-6 leading-relaxed">
+                        Materi ini dirancang untuk siswa kelas 10 SMK untuk memahami peluang karir, potensi bisnis, dan budaya kerja yang aman di dunia teknologi jaringan. Gunakan navigasi di sebelah kiri untuk menjelajahi setiap topik.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-blue-50 p-6 rounded-xl border border-blue-100 text-center cursor-pointer hover:shadow-md transition" onclick="app.navigateTo('profesi')">
+                            <div class="text-4xl mb-3">📡</div>
+                            <h4 class="font-bold text-blue-800">Jenis Profesi</h4>
+                            <p class="text-sm text-blue-600 mt-2">Jelajahi karir dari Teknisi hingga Administrator.</p>
+                        </div>
+                        <div class="bg-amber-50 p-6 rounded-xl border border-amber-100 text-center cursor-pointer hover:shadow-md transition" onclick="app.navigateTo('wirausaha')">
+                            <div class="text-4xl mb-3">🚀</div>
+                            <h4 class="font-bold text-amber-800">Technopreneur</h4>
+                            <p class="text-sm text-amber-600 mt-2">Peluang usaha dan startup di bidang IT.</p>
+                        </div>
+                        <div class="bg-emerald-50 p-6 rounded-xl border border-emerald-100 text-center cursor-pointer hover:shadow-md transition" onclick="app.navigateTo('k3lh')">
+                            <div class="text-4xl mb-3">⚠️</div>
+                            <h4 class="font-bold text-emerald-800">K3LH & 5R</h4>
+                            <p class="text-sm text-emerald-600 mt-2">Budaya kerja aman dan disiplin industri.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROFESI SECTION -->
+        <section id="profesi" class="content-section hidden max-w-5xl mx-auto fade-in">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4 flex items-center gap-3">
+                    <span class="bg-blue-100 text-blue-600 p-2 rounded-lg text-2xl">👨‍💻</span> 
+                    Profesi di Bidang TJKT
+                </h2>
+                <p class="text-slate-600 bg-white p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
+                    Perkembangan teknologi yang pesat membuka banyak peluang karir. Bagian ini menjelaskan berbagai peran profesional (Job Profile) yang dapat diambil oleh lulusan Teknik Jaringan Komputer dan Telekomunikasi.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+                <div class="space-y-4">
+                    <h3 class="font-bold text-lg text-slate-700">Profil Pekerjaan (Klik untuk Detail)</h3>
+                    <div id="job-list" class="space-y-3"></div>
+                </div>
+
+                <div class="space-y-6">
+                    <div id="job-detail-card" class="bg-white p-6 rounded-xl shadow-lg border border-slate-100 min-h-[200px] transition-all duration-300">
+                        <div class="flex items-center gap-4 mb-4 border-b pb-4">
+                            <div id="detail-icon" class="text-4xl bg-slate-100 p-3 rounded-full">🔧</div>
+                            <div>
+                                <h3 id="detail-title" class="text-xl font-bold text-slate-800">Pilih Profesi</h3>
+                                <span id="detail-category" class="text-xs font-semibold bg-slate-200 text-slate-600 px-2 py-1 rounded">Kategori</span>
+                            </div>
+                        </div>
+                        <p id="detail-desc" class="text-slate-600 mb-4">Klik salah satu profesi di sebelah kiri untuk melihat deskripsi pekerjaan, tanggung jawab, dan keahlian yang dibutuhkan.</p>
+                        <div id="detail-skills" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h4 class="font-bold text-slate-700 mb-4 text-center">Estimasi Permintaan Industri (Relatif)</h4>
+                        <div class="chart-container">
+                            <canvas id="profesiChart"></canvas>
+                        </div>
+                        <p class="text-xs text-center text-slate-400 mt-2">*Data ilustrasi untuk tujuan pembelajaran</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- KEWIRAUSAHAAN SECTION -->
+        <section id="wirausaha" class="content-section hidden max-w-5xl mx-auto fade-in">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4 flex items-center gap-3">
+                    <span class="bg-amber-100 text-amber-600 p-2 rounded-lg text-2xl">💼</span> 
+                    Kewirausahaan (Technopreneur)
+                </h2>
+                <p class="text-slate-600 bg-white p-6 rounded-lg shadow-sm border-l-4 border-amber-500">
+                    Technopreneurship adalah wirausaha yang berbasis teknologi. Siswa SMK dituntut tidak hanya siap kerja, tetapi juga mampu membaca peluang usaha mandiri di bidang jaringan dan telekomunikasi.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-amber-400 card-hover">
+                    <div class="text-3xl mb-3">📡</div>
+                    <h3 class="font-bold text-lg mb-2">Jasa Instalasi Jaringan</h3>
+                    <p class="text-sm text-slate-600">Pemasangan LAN kantor, instalasi CCTV, konfigurasi router Mikrotik, dan maintenance jaringan lokal.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-amber-400 card-hover">
+                    <div class="text-3xl mb-3">🌐</div>
+                    <h3 class="font-bold text-lg mb-2">Reseller Internet (RT/RW Net)</h3>
+                    <p class="text-sm text-slate-600">Membangun infrastruktur WiFi skala kecil untuk lingkungan perumahan (dengan izin ISP resmi).</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-amber-400 card-hover">
+                    <div class="text-3xl mb-3">🛠️</div>
+                    <h3 class="font-bold text-lg mb-2">Service Center</h3>
+                    <p class="text-sm text-slate-600">Perbaikan perangkat keras komputer, laptop, printer, dan instalasi ulang sistem operasi.</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="md:w-1/2">
+                        <h3 class="text-xl font-bold text-slate-800 mb-4">Analisis Potensi Usaha</h3>
+                        <p class="text-slate-600 mb-6 text-sm">
+                            Grafik di samping membandingkan perkiraan <strong>Modal Awal</strong> (Sumbu X) dengan potensi <strong>Kecepatan Balik Modal</strong> (Sumbu Y) untuk berbagai ide bisnis TJKT.
+                        </p>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-500"></span> <strong>Jasa Service:</strong> Modal kecil, hasil cepat.</li>
+                            <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-green-500"></span> <strong>Web Development:</strong> Modal skill, profit tinggi.</li>
+                            <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-purple-500"></span> <strong>ISP/RT-RW Net:</strong> Modal besar, passive income jangka panjang.</li>
+                        </ul>
+                    </div>
+                    <div class="md:w-1/2 flex justify-center items-center bg-slate-50 rounded-xl p-4">
+                        <div class="chart-container">
+                            <canvas id="businessChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- K3LH & 5R SECTION -->
+        <section id="k3lh" class="content-section hidden max-w-5xl mx-auto fade-in">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4 flex items-center gap-3">
+                    <span class="bg-emerald-100 text-emerald-600 p-2 rounded-lg text-2xl">⚠️</span> 
+                    K3LH dan Budaya Kerja 5R
+                </h2>
+                <p class="text-slate-600 bg-white p-6 rounded-lg shadow-sm border-l-4 border-emerald-500">
+                    Keselamatan dan Kesehatan Kerja serta Lingkungan Hidup (K3LH) adalah prioritas utama. Budaya 5R diterapkan untuk menjaga efisiensi dan keselamatan di tempat kerja.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+                <div class="bg-slate-800 text-white p-4">
+                    <h3 class="font-bold text-lg text-center">Budaya Kerja 5R (Ringkas, Rapi, Resik, Rawat, Rajin)</h3>
+                </div>
+                <div class="flex flex-wrap border-b border-slate-200">
+                    <button class="tab-5r flex-1 py-4 px-2 text-center hover:bg-emerald-50 focus:outline-none transition border-b-2 border-transparent font-medium text-sm md:text-base" onclick="render5R('ringkas', this)">1. Ringkas</button>
+                    <button class="tab-5r flex-1 py-4 px-2 text-center hover:bg-emerald-50 focus:outline-none transition border-b-2 border-transparent font-medium text-sm md:text-base" onclick="render5R('rapi', this)">2. Rapi</button>
+                    <button class="tab-5r flex-1 py-4 px-2 text-center hover:bg-emerald-50 focus:outline-none transition border-b-2 border-transparent font-medium text-sm md:text-base" onclick="render5R('resik', this)">3. Resik</button>
+                    <button class="tab-5r flex-1 py-4 px-2 text-center hover:bg-emerald-50 focus:outline-none transition border-b-2 border-transparent font-medium text-sm md:text-base" onclick="render5R('rawat', this)">4. Rawat</button>
+                    <button class="tab-5r flex-1 py-4 px-2 text-center hover:bg-emerald-50 focus:outline-none transition border-b-2 border-transparent font-medium text-sm md:text-base" onclick="render5R('rajin', this)">5. Rajin</button>
+                </div>
+                <div class="p-8 text-center min-h-[200px] flex flex-col justify-center items-center bg-emerald-50/30" id="content-5r"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="font-bold text-lg text-slate-800 mb-4 border-b pb-2">Alat Pelindung Diri (APD)</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <span class="text-2xl">⛑️</span>
+                            <div>
+                                <span class="font-bold block text-slate-700">Helm Keselamatan</span>
+                                <span class="text-sm text-slate-500">Wajib saat bekerja di ketinggian atau konstruksi jaringan luar.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-2xl">👓</span>
+                            <div>
+                                <span class="font-bold block text-slate-700">Kacamata Pelindung</span>
+                                <span class="text-sm text-slate-500">Melindungi mata dari serpihan fiber optic saat splicing.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-2xl">🧤</span>
+                            <div>
+                                <span class="font-bold block text-slate-700">Sarung Tangan & Gelang Antistatis</span>
+                                <span class="text-sm text-slate-500">Mencegah kerusakan komponen akibat listrik statis (ESD).</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="font-bold text-lg text-slate-800 mb-4 border-b pb-2">Potensi Bahaya TJKT</h3>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-sm">
+                            <strong>Bahaya Listrik:</strong> Tersengat listrik saat perbaikan perangkat power supply atau UPS.
+                        </div>
+                        <div class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-sm">
+                            <strong>Bahaya Ketinggian:</strong> Jatuh saat instalasi antena atau kabel di tiang/tower.
+                        </div>
+                        <div class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-sm">
+                            <strong>Bahaya Radiasi:</strong> Paparan gelombang elektromagnetik berlebih.
+                        </div>
+                        <div class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-sm">
+                            <strong>Ergonomi:</strong> Sakit punggung/mata lelah karena posisi duduk yang salah.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EVALUASI SECTION -->
+        <section id="evaluasi" class="content-section hidden max-w-4xl mx-auto fade-in">
+             <div class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4 flex items-center gap-3">
+                    <span class="bg-indigo-100 text-indigo-600 p-2 rounded-lg text-2xl">📝</span> 
+                    Rangkuman & Evaluasi
+                </h2>
+                <p class="text-slate-600 bg-white p-6 rounded-lg shadow-sm border-l-4 border-indigo-500">
+                    Uji pemahaman Anda mengenai materi Bab 3 dengan mempelajari rangkuman singkat dan menjawab soal essay di bawah ini.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md mb-10 overflow-hidden">
+                <h3 class="bg-slate-100 p-4 font-bold text-slate-700 border-b">Rangkuman Materi</h3>
+                <div class="divide-y divide-slate-100">
+                    <details class="group p-4 open">
+                        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-indigo-700">
+                            <span>Poin Penting Profesi</span>
+                            <span class="transition group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="text-slate-600 mt-3 text-sm leading-relaxed group-open:animate-fadeIn">
+                            Profesi di bidang TJKT sangat luas, mencakup Network Engineer, Administrator Jaringan, Teknisi Komputer, hingga RF Engineer.
+                        </div>
+                    </details>
+                    <details class="group p-4">
+                        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-amber-700">
+                            <span>Poin Penting Kewirausahaan</span>
+                            <span class="transition group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="text-slate-600 mt-3 text-sm leading-relaxed group-open:animate-fadeIn">
+                            Peluang usaha TJKT meliputi jasa (servis, instalasi), produk (jual beli hardware), dan solusi digital (software house).
+                        </div>
+                    </details>
+                    <details class="group p-4">
+                        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-emerald-700">
+                            <span>Poin Penting K3LH & 5R</span>
+                            <span class="transition group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="text-slate-600 mt-3 text-sm leading-relaxed group-open:animate-fadeIn">
+                            K3LH bertujuan mencegah kecelakaan kerja. Budaya 5R adalah metode penataan lingkungan kerja agar efektif dan aman.
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <h3 class="font-bold text-xl text-slate-800">Soal Essay Latihan</h3>
+                <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-indigo-400">
+                    <p class="font-semibold text-slate-800 mb-3">1. Sebutkan dan jelaskan 3 contoh profesi yang dapat ditekuni oleh lulusan TJKT!</p>
+                    <textarea class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none mb-3 text-sm" rows="3"></textarea>
+                    <button class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1 rounded transition" onclick="toggleAnswer('ans1')">Lihat Kunci Jawaban</button>
+                    <div id="ans1" class="hidden mt-3 p-3 bg-green-50 text-green-800 text-sm rounded border border-green-200">
+                        <strong>Jawaban:</strong> Network Admin, Teknisi Fiber Optic, Technical Support.
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-indigo-400">
+                    <p class="font-semibold text-slate-800 mb-3">2. Apa yang dimaksud dengan Technopreneur?</p>
+                    <textarea class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none mb-3 text-sm" rows="3"></textarea>
+                    <button class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1 rounded transition" onclick="toggleAnswer('ans2')">Lihat Kunci Jawaban</button>
+                    <div id="ans2" class="hidden mt-3 p-3 bg-green-50 text-green-800 text-sm rounded border border-green-200">
+                        <strong>Jawaban:</strong> Wirausahawan yang memanfaatkan teknologi sebagai basis utama bisnisnya.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="h-10 md:hidden"></div>
+    </main>
+
+    <script>
+        const jobData = [
+            { id: 1, title: "Network Administrator", icon: "🖥️", category: "Manajemen Jaringan", description: "Bertanggung jawab atas instalasi, konfigurasi, dan pemeliharaan jaringan komputer.", skills: ["TCP/IP", "Mikrotik", "Linux"], demand: 85 },
+            { id: 2, title: "Fiber Optic Technician", icon: "🔦", category: "Infrastruktur", description: "Melakukan instalasi kabel serat optik dan penyambungan (splicing).", skills: ["Splicing", "OTDR", "Safety"], demand: 90 },
+            { id: 3, title: "Technical Support", icon: "🎧", category: "Layanan IT", description: "Membantu pengguna menyelesaikan masalah teknis hardware atau software.", skills: ["Komunikasi", "Hardware", "OS"], demand: 75 },
+            { id: 4, title: "RF Engineer", icon: "📡", category: "Telekomunikasi", description: "Merencanakan dan mengoptimalkan jaringan nirkabel (Radio Frequency).", skills: ["Radio", "Antena", "Planning"], demand: 80 }
+        ];
+
+        const content5RData = {
+            ringkas: { title: "1. Ringkas", desc: "Memilah barang yang diperlukan dan yang tidak diperlukan.", icon: "🗑️", color: "text-red-500" },
+            rapi: { title: "2. Rapi", desc: "Menata barang yang diperlukan pada tempat yang mudah ditemukan.", icon: "🏷️", color: "text-blue-500" },
+            resik: { title: "3. Resik", desc: "Membersihkan tempat kerja dan peralatan dari debu.", icon: "✨", color: "text-yellow-500" },
+            rawat: { title: "4. Rawat", desc: "Mempertahankan kondisi Ringkas, Rapi, dan Resik.", icon: "📋", color: "text-green-500" },
+            rajin: { title: "5. Rajin", desc: "Mendisiplinkan diri untuk melakukan 4 tahap sebelumnya.", icon: "🔄", color: "text-purple-500" }
+        };
+
+        const app = {
+            state: { currentTab: 'intro', selectedJobId: 1 },
+            init: function() {
+                this.renderJobList();
+                this.selectJob(1);
+                
+                // Fix for querySelector error: use safe identifier or handle if null
+                const firstTab = document.querySelector('.tab-5r');
+                if (firstTab) {
+                    render5R('ringkas', firstTab);
+                } else {
+                    render5R('ringkas');
+                }
+                
+                this.initCharts();
+                this.setupMobileMenu();
+            },
+            navigateTo: function(targetId) {
+                this.state.currentTab = targetId;
+                document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
+                const targetEl = document.getElementById(targetId);
+                if (targetEl) {
+                    targetEl.classList.remove('hidden');
+                    targetEl.classList.add('fade-in');
+                }
+                document.querySelectorAll('.nav-item').forEach(btn => {
+                    btn.classList.remove('bg-slate-800', 'text-white', 'border-indigo-500');
+                    if(btn.dataset.target === targetId) btn.classList.add('bg-slate-800', 'text-white', 'border-indigo-500');
+                });
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+                document.getElementById('sidebar-overlay').classList.add('hidden');
+            },
+            renderJobList: function() {
+                const container = document.getElementById('job-list');
+                if (!container) return;
+                container.innerHTML = jobData.map(job => `
+                    <div onclick="app.selectJob(${job.id})" 
+                         class="job-item cursor-pointer p-4 rounded-lg border border-slate-200 bg-white hover:bg-indigo-50 transition flex items-center gap-3"
+                         id="job-btn-${job.id}">
+                        <span class="text-2xl">${job.icon}</span>
+                        <div><h4 class="font-bold text-sm text-slate-700">${job.title}</h4></div>
+                    </div>
+                `).join('');
+            },
+            selectJob: function(id) {
+                const job = jobData.find(j => j.id === id);
+                if (!job) return;
+                document.querySelectorAll('.job-item').forEach(el => el.classList.remove('border-indigo-500', 'ring-1', 'ring-indigo-500'));
+                const btn = document.getElementById(`job-btn-${id}`);
+                if (btn) btn.classList.add('border-indigo-500', 'ring-1', 'ring-indigo-500');
+                document.getElementById('detail-icon').textContent = job.icon;
+                document.getElementById('detail-title').textContent = job.title;
+                document.getElementById('detail-desc').textContent = job.description;
+                document.getElementById('detail-skills').innerHTML = job.skills.map(s => `<span class="bg-indigo-100 px-2 py-1 rounded text-xs">${s}</span>`).join('');
+            },
+            initCharts: function() {
+                const ctxP = document.getElementById('profesiChart')?.getContext('2d');
+                if (ctxP) new Chart(ctxP, {
+                    type: 'bar',
+                    data: {
+                        labels: jobData.map(j => j.title),
+                        datasets: [{ data: jobData.map(j => j.demand), backgroundColor: '#6366f1' }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                });
+                const ctxB = document.getElementById('businessChart')?.getContext('2d');
+                if (ctxB) new Chart(ctxB, {
+                    type: 'bubble',
+                    data: {
+                        datasets: [
+                            { label: 'Jasa', data: [{x: 20, y: 80, r: 10}], backgroundColor: '#3b82f6' },
+                            { label: 'RT-RW', data: [{x: 80, y: 40, r: 15}], backgroundColor: '#8b5cf6' }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            },
+            setupMobileMenu: function() {
+                const btn = document.getElementById('mobile-menu-btn');
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                if (!btn || !sidebar || !overlay) return;
+                btn.onclick = () => { sidebar.classList.toggle('-translate-x-full'); overlay.classList.toggle('hidden'); };
+                overlay.onclick = btn.onclick;
+            }
+        };
+
+        function render5R(key, btnElement) {
+            const data = content5RData[key];
+            const container = document.getElementById('content-5r');
+            if (!container || !data) return;
+            container.innerHTML = `<div class="fade-in"><div class="text-6xl mb-4 ${data.color}">${data.icon}</div><h4 class="text-2xl font-bold mb-2">${data.title}</h4><p class="text-slate-600 max-w-lg mx-auto">${data.desc}</p></div>`;
+            document.querySelectorAll('.tab-5r').forEach(b => b.classList.remove('border-emerald-500', 'bg-emerald-50'));
+            if(btnElement) btnElement.classList.add('border-emerald-500', 'bg-emerald-50');
+        }
+
+        function toggleAnswer(id) {
+            document.getElementById(id)?.classList.toggle('hidden');
+        }
+
+        window.onload = () => app.init();
+    </script>
+</body>
+</html>

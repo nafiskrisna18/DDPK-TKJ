@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bab 2: Perkembangan Teknologi TJKT - Modul Interaktif</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F9FA; /* Warm Neutral Background */
+            color: #1E293B;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8; 
+        }
+
+        /* Chart Container Strategy */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            height: 350px; /* Base height */
+            max-height: 400px;
+        }
+        @media (max-width: 640px) {
+            .chart-container {
+                height: 250px;
+            }
+        }
+
+        /* Card Hover Effects */
+        .hover-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .hover-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Interactive Element Styles */
+        .tab-btn.active {
+            background-color: #3B82F6;
+            color: white;
+            border-color: #3B82F6;
+        }
+        
+        /* Topology CSS Shapes (No SVG) */
+        .node {
+            width: 40px;
+            height: 40px;
+            background-color: #3B82F6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            z-index: 10;
+        }
+        .line {
+            position: absolute;
+            background-color: #94A3B8;
+        }
+    </style>
+
+    <!-- Chosen Palette: Corporate Tech & Warmth -->
+    <!-- Primary: #3B82F6 (Blue-500) - Clarity, Trust, Tech -->
+    <!-- Background: #F8F9FA (Slate-50) - Ease of reading -->
+    <!-- Text: #1E293B (Slate-800) - High contrast -->
+    <!-- Accent: #F59E0B (Amber-500) - Highlights, Important Interactions -->
+</head>
+<body class="antialiased">
+
+    <!-- Application Structure Plan: 
+         1. Hero Header: Clear Title and Learning Objectives.
+         2. Dashboard Overview: A high-level visual comparison of "Then vs Now" to hook the student.
+         3. Interactive Timeline (History): Covers Evolution of both Computer & Telecom networks in a chronological flow.
+         4. Tech Deep Dive (Tabs): Splits content into "Computer Network Tech" and "Telecom Tech" to avoid information overload.
+         5. Implementation Gallery: Grid layout showing real-world applications (IoT, Smart Cities).
+         6. Assessment Zone: Summary and Essay questions with interactive answer reveal.
+         RATIONALE: This structure moves from broad context (History) to specific mechanics (Tech), then to application (Implementation), and finally verification (Assessment), mirroring Bloom's taxonomy.
+    -->
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-blue-600">TJKT</span>
+                    <span class="ml-2 text-sm font-medium text-gray-500 hidden sm:block">| Dasar Program Keahlian (Kelas 10)</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <button onclick="scrollToSection('intro')" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Pengantar</button>
+                    <button onclick="scrollToSection('sejarah')" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Sejarah</button>
+                    <button onclick="scrollToSection('teknologi')" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Teknologi</button>
+                    <button onclick="scrollToSection('evaluasi')" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Evaluasi</button>
+                </div>
+                <!-- Mobile Menu Button (Simple) -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-gray-600">☰</button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b px-4 py-2">
+             <button onclick="scrollToSection('intro')" class="block w-full text-left py-2 text-sm text-gray-700">Pengantar</button>
+             <button onclick="scrollToSection('sejarah')" class="block w-full text-left py-2 text-sm text-gray-700">Sejarah</button>
+             <button onclick="scrollToSection('teknologi')" class="block w-full text-left py-2 text-sm text-gray-700">Teknologi</button>
+             <button onclick="scrollToSection('evaluasi')" class="block w-full text-left py-2 text-sm text-gray-700">Evaluasi</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+
+        <!-- 1. INTRO / HERO SECTION -->
+        <section id="intro" class="text-center space-y-6">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-800 tracking-tight">
+                Bab 2: Perkembangan Teknologi <br>
+                <span class="text-blue-600">Teknik Jaringan Komputer & Telekomunikasi</span>
+            </h1>
+            <p class="max-w-2xl mx-auto text-lg text-slate-600 leading-relaxed">
+                Selamat datang di modul interaktif ini. Kita akan mempelajari bagaimana teknologi jaringan berevolusi dari kabel tembaga sederhana menjadi ekosistem 5G dan serat optik yang mengubah dunia.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover-card">
+                    <div class="text-3xl mb-3">📡</div>
+                    <h3 class="font-bold text-slate-800">Telekomunikasi</h3>
+                    <p class="text-sm text-slate-500 mt-2">Dari telegraf hingga 5G, pahami evolusi komunikasi jarak jauh.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover-card">
+                    <div class="text-3xl mb-3">💻</div>
+                    <h3 class="font-bold text-slate-800">Jaringan Komputer</h3>
+                    <p class="text-sm text-slate-500 mt-2">Pelajari topologi, arsitektur, dan cara data berpindah.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover-card">
+                    <div class="text-3xl mb-3">🏙️</div>
+                    <h3 class="font-bold text-slate-800">Implementasi</h3>
+                    <p class="text-sm text-slate-500 mt-2">Smart City, IoT, dan penerapan teknologi di dunia nyata.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. SEJARAH & EVOLUSI (Combined Timeline) -->
+        <section id="sejarah" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-8 border-b border-slate-100 bg-slate-50">
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Lini Masa Evolusi</h2>
+                <p class="text-slate-600">
+                    Bagian ini merangkum <span class="font-semibold text-blue-600">Perkembangan Jaringan Komputer dan Telekomunikasi</span>. Klik pada era di bawah untuk melihat detail teknologi dan dampaknya.
+                </p>
+            </div>
+
+            <div class="p-8">
+                <!-- Timeline Controls -->
+                <div class="flex flex-wrap gap-2 justify-center mb-8" id="timeline-controls">
+                    <!-- Buttons injected via JS -->
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                    <!-- Dynamic Text Content -->
+                    <div id="timeline-content" class="space-y-4">
+                        <h3 id="era-title" class="text-2xl font-bold text-blue-700">Pilih Era</h3>
+                        <p id="era-desc" class="text-slate-600 leading-relaxed">...</p>
+                        <div class="bg-amber-50 border-l-4 border-amber-500 p-4">
+                            <p class="text-sm text-amber-800 font-semibold">💡 Fakta Kunci:</p>
+                            <p id="era-fact" class="text-sm text-amber-700">...</p>
+                        </div>
+                    </div>
+
+                    <!-- Visualization: Speed/Adoption Growth -->
+                    <div>
+                        <div class="chart-container">
+                            <canvas id="evolutionChart"></canvas>
+                        </div>
+                        <p class="text-center text-xs text-slate-400 mt-2">Visualisasi Estimasi Kecepatan Transfer Data (Logarithmic Scale)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. TEKNOLOGI JARINGAN (Computer vs Telecom) -->
+        <section id="teknologi" class="space-y-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-slate-800">Detail Teknologi</h2>
+                <p class="text-slate-600 mt-2 max-w-2xl mx-auto">
+                    Membedah komponen inti dari <span class="font-semibold">Teknologi Jaringan Komputer</span> dan <span class="font-semibold">Telekomunikasi</span>. Gunakan tombol di bawah untuk beralih topik.
+                </p>
+            </div>
+
+            <!-- Toggle Switch -->
+            <div class="flex justify-center mb-8">
+                <div class="bg-slate-200 p-1 rounded-lg inline-flex">
+                    <button onclick="switchTechTab('komputer')" id="btn-komputer" class="px-6 py-2 rounded-md text-sm font-bold transition-all bg-white shadow text-blue-700">
+                        Jaringan Komputer
+                    </button>
+                    <button onclick="switchTechTab('telekom')" id="btn-telekom" class="px-6 py-2 rounded-md text-sm font-bold transition-all text-slate-600 hover:text-slate-800">
+                        Jaringan Telekomunikasi
+                    </button>
+                </div>
+            </div>
+
+            <!-- CONTENT: COMPUTER NETWORK -->
+            <div id="content-komputer" class="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
+                <!-- Concept Card -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <span class="bg-blue-100 text-blue-600 p-2 rounded-lg text-sm">LAN / MAN / WAN</span>
+                        Klasifikasi Area
+                    </h3>
+                    <ul class="space-y-4 text-sm text-slate-700">
+                        <li class="flex items-start gap-3">
+                            <span class="font-bold text-blue-500 whitespace-nowrap">LAN:</span>
+                            <span>Local Area Network. Jaringan lokal (sekolah, kantor, rumah). Kecepatan tinggi, area sempit.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="font-bold text-blue-500 whitespace-nowrap">MAN:</span>
+                            <span>Metropolitan Area Network. Menghubungkan LAN dalam satu kota. Contoh: Jaringan bank antar cabang.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="font-bold text-blue-500 whitespace-nowrap">WAN:</span>
+                            <span>Wide Area Network. Antar negara/benua. Internet adalah WAN terbesar.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Visualization: Network Topology CSS Construction -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col items-center justify-center">
+                    <h3 class="text-xl font-bold mb-6 w-full text-left border-b pb-2">Topologi Dasar (Star)</h3>
+                    
+                    <!-- CSS Canvas for Topology -->
+                    <div class="relative w-64 h-64 bg-slate-50 rounded-lg border border-slate-100">
+                        <!-- Central Hub -->
+                        <div class="node absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-slate-800 z-20">Hub</div>
+                        
+                        <!-- Connecting Lines -->
+                        <div class="line w-32 h-1 bg-slate-300 top-1/2 left-16 transform -translate-y-1/2"></div>
+                        <div class="line h-32 w-1 bg-slate-300 left-1/2 top-16 transform -translate-x-1/2"></div>
+
+                        <!-- Nodes -->
+                        <div class="node absolute top-4 left-1/2 transform -translate-x-1/2 bg-blue-500">PC1</div>
+                        <div class="node absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-500">PC2</div>
+                        <div class="node absolute top-1/2 left-4 transform -translate-y-1/2 bg-blue-500">PC3</div>
+                        <div class="node absolute top-1/2 right-4 transform -translate-y-1/2 bg-blue-500">PC4</div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-4 text-center">Topologi Star: Semua node terhubung ke perangkat pusat. Jika satu kabel putus, yang lain tidak terganggu.</p>
+                </div>
+            </div>
+
+            <!-- CONTENT: TELECOM NETWORK -->
+            <div id="content-telekom" class="hidden grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
+                <!-- Concept Card -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-xl font-bold mb-4 text-emerald-700">Evolusi Seluler (G)</h3>
+                    <div class="space-y-4">
+                        <div class="group cursor-pointer">
+                            <h4 class="font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">1G (Analog)</h4>
+                            <p class="text-sm text-slate-600">Hanya suara (voice). Kualitas rendah, tidak aman.</p>
+                        </div>
+                        <div class="border-t border-slate-100 pt-2 group cursor-pointer">
+                            <h4 class="font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">2G (Digital - GSM/CDMA)</h4>
+                            <p class="text-sm text-slate-600">Suara + SMS. Awal mula data digital (GPRS/EDGE).</p>
+                        </div>
+                        <div class="border-t border-slate-100 pt-2 group cursor-pointer">
+                            <h4 class="font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">3G (Broadband)</h4>
+                            <p class="text-sm text-slate-600">Video call, internet mobile yang layak.</p>
+                        </div>
+                        <div class="border-t border-slate-100 pt-2 group cursor-pointer">
+                            <h4 class="font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">4G (LTE)</h4>
+                            <p class="text-sm text-slate-600">Streaming HD, Gaming, kecepatan tinggi.</p>
+                        </div>
+                         <div class="border-t border-slate-100 pt-2 group cursor-pointer">
+                            <h4 class="font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">5G (IoT Era)</h4>
+                            <p class="text-sm text-slate-600">Low latency, Massive IoT, Kecepatan hingga 10Gbps.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualization: Comparison Chart -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-xl font-bold mb-4">Perbandingan Latency (Keterlambatan)</h3>
+                    <div class="chart-container">
+                        <canvas id="telekomChart"></canvas>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2 text-center">Semakin rendah latency, semakin responsif jaringan (Penting untuk mobil otonom & bedah jarak jauh).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. IMPLEMENTASI -->
+        <section class="bg-slate-800 rounded-3xl p-8 md:p-12 text-white">
+            <div class="mb-8 border-b border-slate-600 pb-4">
+                <h2 class="text-3xl font-bold">Implementasi Teknologi</h2>
+                <p class="text-slate-300 mt-2">Bagaimana teknologi ini diterapkan dalam kehidupan sehari-hari?</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-slate-700 p-5 rounded-xl hover:bg-slate-600 transition duration-300">
+                    <div class="text-3xl mb-3">🏠</div>
+                    <h3 class="font-bold text-lg mb-2">Smart Home</h3>
+                    <p class="text-sm text-slate-300">Kontrol lampu, AC, dan keamanan via smartphone menggunakan IoT (Internet of Things).</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-slate-700 p-5 rounded-xl hover:bg-slate-600 transition duration-300">
+                    <div class="text-3xl mb-3">☁️</div>
+                    <h3 class="font-bold text-lg mb-2">Cloud Computing</h3>
+                    <p class="text-sm text-slate-300">Menyimpan file di Google Drive atau streaming via Netflix tanpa perlu HDD besar.</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-slate-700 p-5 rounded-xl hover:bg-slate-600 transition duration-300">
+                    <div class="text-3xl mb-3">🏥</div>
+                    <h3 class="font-bold text-lg mb-2">Tele-Health</h3>
+                    <p class="text-sm text-slate-300">Konsultasi dokter jarak jauh dan monitoring pasien real-time.</p>
+                </div>
+                <!-- Card 4 -->
+                <div class="bg-slate-700 p-5 rounded-xl hover:bg-slate-600 transition duration-300">
+                    <div class="text-3xl mb-3">🏭</div>
+                    <h3 class="font-bold text-lg mb-2">Industry 4.0</h3>
+                    <p class="text-sm text-slate-300">Otomatisasi pabrik dengan robot yang saling berkomunikasi lewat jaringan privat.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. EVALUASI (Essay & Summary) -->
+        <section id="evaluasi" class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+            <div class="flex flex-col md:flex-row gap-10">
+                <!-- Summary Column -->
+                <div class="md:w-1/3 space-y-4">
+                    <h2 class="text-2xl font-bold text-blue-800 border-b-2 border-blue-100 pb-2">Rangkuman Materi</h2>
+                    <ul class="list-disc pl-5 text-sm text-slate-700 space-y-2 marker:text-blue-500">
+                        <li><strong>Evolusi:</strong> Dimulai dari telegraf (kabel) hingga 5G (nirkabel super cepat).</li>
+                        <li><strong>Jaringan Komputer:</strong> Fokus pada resource sharing. Terbagi menjadi LAN, MAN, WAN berdasarkan geografis.</li>
+                        <li><strong>Telekomunikasi:</strong> Fokus pada pertukaran informasi jarak jauh. Bergerak dari analog ke digital.</li>
+                        <li><strong>Masa Depan:</strong> Integrasi AI, IoT masif, dan keamanan siber menjadi fokus utama.</li>
+                    </ul>
+                </div>
+
+                <!-- Quiz Column -->
+                <div class="md:w-2/3">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6">Uji Pemahaman (Essay)</h2>
+                    <p class="text-sm text-slate-500 mb-6">Jawab pertanyaan berikut, lalu klik "Cek Jawaban" untuk melihat poin penting yang seharusnya ada.</p>
+
+                    <div class="space-y-6" id="quiz-container">
+                        <!-- Questions injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 mt-12 text-center text-sm">
+        <p>Modul Pembelajaran Dasar-dasar TJKT - Kelas 10 SMK</p>
+        <p class="mt-2 text-slate-600">Dibuat untuk tujuan pendidikan.</p>
+    </footer>
+
+    <!-- Visualization & Content Choices:
+         1. Timeline Chart (Line): Shows the exponential growth of data speed. Goal: Visualize 'Progress'. Interaction: None (static updates based on timeline click).
+         2. Latency Chart (Bar): Compares 3G/4G/5G latency. Goal: Compare performance. Interaction: Hover to see exact ms values.
+         3. Topology Diagram (CSS): Uses simple divs to show structure without heavy images/SVG. Goal: Visualize architecture.
+         4. Essay Logic: Simple show/hide logic. Goal: Self-assessment.
+         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+
+    <script>
+        // --- DATA STATE ---
+        const historyData = [
+            {
+                era: "1800s - 1960",
+                title: "Era Perintis (Telegraph & Telepon)",
+                desc: "Komunikasi jarak jauh dimulai dengan kabel tembaga. Penemuan Telegraf oleh Morse dan Telepon oleh Bell menjadi fondasi. Komputer masih berupa mainframe raksasa yang belum saling terhubung (Standalone).",
+                fact: "Tahun 1844, pesan telegraf pertama dikirim: 'What hath God wrought?'",
+                speed: 0.001 // Mock value for chart
+            },
+            {
+                era: "1969 - 1980",
+                title: "Lahirnya ARPANET",
+                desc: "Departemen Pertahanan AS mengembangkan ARPANET, cikal bakal Internet. Menggunakan konsep 'Packet Switching' untuk memecah data agar lebih efisien daripada sirkuit telepon biasa.",
+                fact: "1969: Koneksi pertama antara UCLA dan Stanford terjadi. Sistem crash setelah mengetik dua huruf 'LO'.",
+                speed: 0.05
+            },
+            {
+                era: "1990s",
+                title: "Era WWW & Seluler 2G",
+                desc: "Tim Berners-Lee menciptakan World Wide Web. Internet menjadi publik. Telepon seluler beralih ke digital (2G/GSM) memungkinkan SMS. LAN mulai populer di kantor.",
+                fact: "Tahun 1991, website pertama di dunia dipublikasikan.",
+                speed: 10
+            },
+            {
+                era: "2000s - 2010",
+                title: "Broadband & Mobile Data (3G/4G)",
+                desc: "Internet kecepatan tinggi (DSL/Fiber) menggantikan Dial-up. Smartphone muncul. 3G dan 4G memungkinkan streaming video di HP. Sosial media meledak.",
+                fact: "Jumlah perangkat yang terhubung mulai melebihi jumlah populasi manusia.",
+                speed: 100
+            },
+            {
+                era: "2020 - Kini",
+                title: "Era 5G & IoT",
+                desc: "Kecepatan gigabit nirkabel. Fokus bukan hanya manusia, tapi 'Things' (mobil, kulkas, sensor pabrik) yang saling bicara. Cloud computing menjadi standar.",
+                fact: "5G memiliki latency di bawah 1 milidetik secara teoritis.",
+                speed: 1000
+            }
+        ];
+
+        const essayQuestions = [
+            {
+                q: "Jelaskan perbedaan mendasar antara jaringan LAN dan WAN!",
+                a: "LAN (Local Area Network) mencakup area geografis yang sempit (ruangan/gedung), kecepatan transfer tinggi, dan biaya instalasi relatif rendah. WAN (Wide Area Network) mencakup area sangat luas (negara/benua), menggunakan infrastruktur publik (seperti satelit/kabel bawah laut), kecepatan bervariasi, dan biaya operasional tinggi."
+            },
+            {
+                q: "Mengapa teknologi Fiber Optic lebih unggul dibandingkan kabel tembaga (Coaxial/Twisted Pair)?",
+                a: "Fiber Optic menggunakan cahaya untuk mengirim data, sehingga: 1) Memiliki bandwidth jauh lebih besar, 2) Tahan terhadap interferensi elektromagnetik (gangguan listrik/petir), 3) Dapat mengirim data jarak jauh tanpa pelemahan sinyal yang signifikan (attenuation rendah)."
+            },
+            {
+                q: "Apa yang dimaksud dengan IoT (Internet of Things) dan berikan 2 contoh penerapannya!",
+                a: "IoT adalah konsep di mana objek sehari-hari memiliki sensor dan koneksi internet untuk mengirim/menerima data. Contoh: 1) Smart Lamp (dikontrol via HP), 2) Smart Farming (sensor kelembaban tanah otomatis menyalakan irigasi)."
+            },
+            {
+                q: "Jelaskan perkembangan teknologi seluler dari 1G hingga 5G secara singkat!",
+                a: "1G: Suara analog. 2G: Suara digital & SMS. 3G: Data mobile (internet/video call). 4G: Broadband kecepatan tinggi (Streaming HD). 5G: Ultra-low latency dan kapasitas masif untuk IoT/Industri."
+            },
+            {
+                q: "Apa dampak positif dan negatif perkembangan teknologi jaringan bagi pelajar?",
+                a: "Positif: Akses informasi tak terbatas, pembelajaran jarak jauh (e-learning), kolaborasi global. Negatif: Risiko kecanduan gadget, cyberbullying, dan penyebaran hoaks jika tidak ada literasi digital."
+            }
+        ];
+
+        // --- CHART INSTANCES ---
+        let evoChart = null;
+        let teleChart = null;
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initTimeline();
+            initQuiz();
+            initCharts();
+            // Load first timeline data
+            updateTimeline(0);
+        });
+
+        // --- FUNCTIONS ---
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+            // Close mobile menu if open
+            const menu = document.getElementById('mobile-menu');
+            if(!menu.classList.contains('hidden')) menu.classList.add('hidden');
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function switchTechTab(tab) {
+            const btnKomp = document.getElementById('btn-komputer');
+            const btnTele = document.getElementById('btn-telekom');
+            const contentKomp = document.getElementById('content-komputer');
+            const contentTele = document.getElementById('content-telekom');
+
+            if (tab === 'komputer') {
+                btnKomp.classList.add('bg-white', 'shadow', 'text-blue-700');
+                btnKomp.classList.remove('text-slate-600', 'hover:text-slate-800');
+                
+                btnTele.classList.remove('bg-white', 'shadow', 'text-blue-700');
+                btnTele.classList.add('text-slate-600', 'hover:text-slate-800');
+
+                contentKomp.classList.remove('hidden');
+                contentKomp.classList.add('grid');
+                contentTele.classList.add('hidden');
+                contentTele.classList.remove('grid');
+            } else {
+                btnTele.classList.add('bg-white', 'shadow', 'text-blue-700');
+                btnTele.classList.remove('text-slate-600', 'hover:text-slate-800');
+
+                btnKomp.classList.remove('bg-white', 'shadow', 'text-blue-700');
+                btnKomp.classList.add('text-slate-600', 'hover:text-slate-800');
+
+                contentTele.classList.remove('hidden');
+                contentTele.classList.add('grid');
+                contentKomp.classList.add('hidden');
+                contentKomp.classList.remove('grid');
+            }
+        }
+
+        // Timeline Logic
+        function initTimeline() {
+            const container = document.getElementById('timeline-controls');
+            historyData.forEach((item, index) => {
+                const btn = document.createElement('button');
+                btn.innerText = item.era;
+                btn.className = `px-4 py-2 rounded-full text-sm font-semibold border transition-all duration-200 hover:bg-blue-50 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 timeline-btn`;
+                btn.dataset.index = index;
+                btn.onclick = () => updateTimeline(index);
+                container.appendChild(btn);
+            });
+        }
+
+        function updateTimeline(index) {
+            const data = historyData[index];
+            
+            // Update Text
+            document.getElementById('era-title').innerText = data.title;
+            document.getElementById('era-desc').innerText = data.desc;
+            document.getElementById('era-fact').innerText = data.fact;
+
+            // Update Buttons State
+            const btns = document.querySelectorAll('.timeline-btn');
+            btns.forEach((b, i) => {
+                if(i === index) {
+                    b.className = "px-4 py-2 rounded-full text-sm font-semibold border bg-blue-600 text-white border-blue-600 shadow-md transform scale-105 timeline-btn";
+                } else {
+                    b.className = "px-4 py-2 rounded-full text-sm font-semibold border bg-white text-slate-600 border-slate-200 hover:bg-slate-50 timeline-btn";
+                }
+            });
+
+            // Update Chart Data (Highlighting specific point)
+            updateEvoChart(index);
+        }
+
+        // Quiz Logic
+        function initQuiz() {
+            const container = document.getElementById('quiz-container');
+            essayQuestions.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = "border-b border-slate-100 pb-6 last:border-0";
+                div.innerHTML = `
+                    <p class="font-bold text-slate-800 mb-2">${index + 1}. ${q.q}</p>
+                    <textarea class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none transition" rows="3" placeholder="Tulis jawabanmu di sini..."></textarea>
+                    <div class="mt-3">
+                        <button onclick="toggleAnswer(${index})" class="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                            <span>👁️ Lihat Kunci Jawaban</span>
+                        </button>
+                        <div id="ans-${index}" class="hidden mt-2 p-3 bg-green-50 text-green-800 text-sm rounded-lg border border-green-100">
+                            <strong>Jawaban Referensi:</strong> ${q.a}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleAnswer(index) {
+            const el = document.getElementById(`ans-${index}`);
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+
+        // Chart Logic
+        function initCharts() {
+            // 1. Evolution Chart (Line/Bar hybrid feel)
+            const ctxEvo = document.getElementById('evolutionChart').getContext('2d');
+            evoChart = new Chart(ctxEvo, {
+                type: 'line',
+                data: {
+                    labels: historyData.map(h => h.era),
+                    datasets: [{
+                        label: 'Indeks Kecepatan & Konektivitas',
+                        data: historyData.map(h => h.speed),
+                        borderColor: '#3B82F6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#2563EB',
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'logarithmic', // Use log scale because jump from 1G to 5G is massive
+                            display: true,
+                            title: { display: true, text: 'Kecepatan Relatif (Log Scale)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return "Level Teknologi: " + context.raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 2. Telecom Latency Chart (Bar)
+            const ctxTele = document.getElementById('telekomChart').getContext('2d');
+            teleChart = new Chart(ctxTele, {
+                type: 'bar',
+                data: {
+                    labels: ['2G (GSM)', '3G', '4G (LTE)', '5G'],
+                    datasets: [{
+                        label: 'Latency (milidetik - Lebih rendah lebih baik)',
+                        data: [500, 100, 50, 1], // Approx values: 2G~500ms, 3G~100ms, 4G~50ms, 5G~1ms
+                        backgroundColor: [
+                            '#94A3B8', // Gray
+                            '#64748B', 
+                            '#3B82F6', // Blue
+                            '#10B981'  // Green (Best)
+                        ],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y', // Horizontal bar for better readability of latency drop
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Latency (ms)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function updateEvoChart(activeIndex) {
+            if(!evoChart) return;
+            // Highlight the active point
+            const bgColors = historyData.map((_, i) => i === activeIndex ? '#F59E0B' : '#fff');
+            const borderColors = historyData.map((_, i) => i === activeIndex ? '#D97706' : '#2563EB');
+            const radii = historyData.map((_, i) => i === activeIndex ? 10 : 6);
+
+            evoChart.data.datasets[0].pointBackgroundColor = bgColors;
+            evoChart.data.datasets[0].pointBorderColor = borderColors;
+            evoChart.data.datasets[0].pointRadius = radii;
+            evoChart.update();
+        }
+
+    </script>
+</body>
+</html>

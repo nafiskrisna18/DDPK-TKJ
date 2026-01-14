@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dasar-dasar Teknik Jaringan Komputer dan Telekomunikasi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: Menggunakan pendekatan Single-Page Application (SPA) dengan navigasi berbasis tab di bagian atas. Struktur ini dipilih untuk memisahkan empat topik utama dan satu bagian kuis secara logis, memungkinkan pengguna untuk beralih antar-topik dengan cepat tanpa perlu menggulir halaman panjang. Alur pengguna dirancang untuk eksplorasi non-linear, di mana mereka dapat mempelajari materi sesuai minat dan kemudian beralih ke kuis. Pendekatan ini lebih unggul dari dokumen statis karena memfasilitasi akses cepat dan perbandingan informasi antar bagian, meningkatkan retensi dan pengalaman belajar. -->
+    <!-- Visualization & Content Choices: 
+        1. Proses Bisnis: Goal: Mengorganisir. Method: Diagram alur interaktif dibuat dengan HTML/CSS. Interaction: Mengklik setiap tahap akan menampilkan deskripsi detail. Justification: Visualisasi proses memudahkan pemahaman alur kerja dari awal hingga akhir. Library: Vanilla JS.
+        2. Perkembangan Teknologi: Goal: Menunjukkan perubahan. Method: Timeline horizontal interaktif dan diagram batang (Chart.js). Interaction: Memilih dekade pada timeline akan menyorot bar pada chart dan menampilkan teknologi kunci. Justification: Timeline efektif untuk narasi historis, sementara chart memberikan data kuantitatif pendukung tentang pertumbuhan pengguna/kecepatan. Library: Chart.js, Vanilla JS.
+        3. Profesi & Wirausaha: Goal: Membandingkan & Menginformasikan. Method: Grid kartu interaktif. Interaction: Mengklik kartu akan menampilkan detail tentang peran atau peluang usaha. Justification: Tata letak kartu memungkinkan pemindaian cepat dan eksplorasi mendalam sesuai permintaan pengguna. Library: Vanilla JS.
+        4. K3LH & Budaya Kerja: Goal: Menginformasikan. Method: Komponen akordeon (accordion). Interaction: Mengklik judul akan membuka atau menutup konten detail. Justification: Akordeon menyajikan informasi padat teks secara ringkas dan terstruktur, mencegah kelebihan beban kognitif. Library: Vanilla JS.
+        5. Latihan Soal: Goal: Evaluasi. Method: Daftar pertanyaan dengan jawaban tersembunyi. Interaction: Tombol "Tampilkan Poin Kunci" akan mengungkapkan poin-poin jawaban. Justification: Mendorong pemikiran aktif sebelum memberikan panduan jawaban. Library: Vanilla JS.
+        -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #0284c7;
+            color: white;
+            font-weight: 600;
+        }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: -6px;
+            width: 12px;
+            height: 12px;
+            background-color: #0284c7;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .answer-key {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-sky-800">Dasar-dasar Teknik Jaringan Komputer & Telekomunikasi</h1>
+            <p class="mt-2 text-slate-600">Sebuah Panduan Interaktif untuk Memahami Dunia TJKT</p>
+        </header>
+
+        <nav class="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8">
+            <button class="nav-button active py-2 px-4 rounded-lg bg-white shadow-sm hover:bg-sky-100" data-target="bisnis">1. Proses Bisnis</button>
+            <button class="nav-button py-2 px-4 rounded-lg bg-white shadow-sm hover:bg-sky-100" data-target="teknologi">2. Perkembangan Teknologi</button>
+            <button class="nav-button py-2 px-4 rounded-lg bg-white shadow-sm hover:bg-sky-100" data-target="profesi">3. Profesi & Wirausaha</button>
+            <button class="nav-button py-2 px-4 rounded-lg bg-white shadow-sm hover:bg-sky-100" data-target="k3lh">4. K3LH & Budaya Kerja</button>
+            <button class="nav-button py-2 px-4 rounded-lg bg-white shadow-sm hover:bg-sky-100" data-target="soal">5. Latihan Soal</button>
+        </nav>
+
+        <main id="content-container" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg min-h-[500px]">
+            
+            <section id="bisnis" class="content-section active">
+                <h2 class="text-2xl font-bold text-sky-700 mb-4">Proses Bisnis di Bidang TJKT</h2>
+                <p class="mb-6 text-slate-600">
+                    Bidang TJKT melibatkan serangkaian proses bisnis yang terstruktur untuk menyediakan layanan jaringan dan telekomunikasi. Dari perencanaan awal hingga dukungan purna jual, setiap tahap memiliki peran krusial dalam memastikan konektivitas yang andal bagi pelanggan. Jelajahi alur kerja umum di bawah ini untuk memahami bagaimana sebuah proyek jaringan diimplementasikan dari awal hingga akhir.
+                </p>
+                <div id="flowchart-container" class="space-y-4">
+                    <div class="flow-item flex items-center p-4 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-100" data-content="bisnis-1">
+                        <div class="bg-sky-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg mr-4">1</div>
+                        <span class="font-semibold">Perencanaan dan Konsultasi</span>
+                    </div>
+                    <div class="flow-item flex items-center p-4 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-100" data-content="bisnis-2">
+                        <div class="bg-sky-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg mr-4">2</div>
+                        <span class="font-semibold">Desain dan Perancangan Jaringan</span>
+                    </div>
+                    <div class="flow-item flex items-center p-4 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-100" data-content="bisnis-3">
+                        <div class="bg-sky-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg mr-4">3</div>
+                        <span class="font-semibold">Implementasi dan Instalasi</span>
+                    </div>
+                    <div class="flow-item flex items-center p-4 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-100" data-content="bisnis-4">
+                        <div class="bg-sky-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg mr-4">4</div>
+                        <span class="font-semibold">Operasi dan Pemeliharaan</span>
+                    </div>
+                </div>
+                <div id="flowchart-content" class="mt-6 p-6 bg-sky-50 border-l-4 border-sky-500 rounded-r-lg">
+                    <h3 id="content-title" class="font-bold text-lg mb-2 text-sky-800">Pilih salah satu tahap untuk melihat detail.</h3>
+                    <p id="content-desc" class="text-slate-700">Setiap tahap dalam proses bisnis TJKT saling berkaitan untuk menghasilkan solusi jaringan yang efektif dan efisien.</p>
+                </div>
+            </section>
+            
+            <section id="teknologi" class="content-section">
+                <h2 class="text-2xl font-bold text-sky-700 mb-4">Perkembangan Teknologi di Bidang TJKT</h2>
+                <p class="mb-6 text-slate-600">
+                    Teknologi jaringan dan telekomunikasi telah berevolusi secara dramatis, dari koneksi dial-up yang lambat hingga era 5G dan Internet of Things (IoT) yang super cepat. Linimasa di bawah ini menyoroti beberapa tonggak penting yang telah membentuk dunia digital saat ini, didukung oleh data pertumbuhan kecepatan internet global.
+                </p>
+                <div class="relative pl-4 border-l-2 border-slate-300">
+                    <div class="timeline-item mb-8 pl-6 cursor-pointer" data-era="1990s">
+                        <h3 class="font-semibold text-lg">Era 1990-an: Awal Mula Internet Komersial</h3>
+                        <p class="text-sm text-slate-500">Kelahiran World Wide Web, booming-nya ISP, dan pengenalan teknologi 2G pada seluler.</p>
+                    </div>
+                    <div class="timeline-item mb-8 pl-6 cursor-pointer" data-era="2000s">
+                        <h3 class="font-semibold text-lg">Era 2000-an: Revolusi Broadband dan 3G</h3>
+                        <p class="text-sm text-slate-500">ADSL dan kabel membawa internet cepat ke rumah, sementara 3G memungkinkan akses internet mobile.</p>
+                    </div>
+                    <div class="timeline-item mb-8 pl-6 cursor-pointer" data-era="2010s">
+                        <h3 class="font-semibold text-lg">Era 2010-an: Era 4G, Cloud, dan Media Sosial</h3>
+                        <p class="text-sm text-slate-500">Kecepatan 4G LTE mendominasi, komputasi awan (cloud) menjadi mainstream, dan media sosial meledak.</p>
+                    </div>
+                    <div class="timeline-item pl-6 cursor-pointer" data-era="2020s">
+                        <h3 class="font-semibold text-lg">Era 2020-an: 5G, IoT, dan AI</h3>
+                        <p class="text-sm text-slate-500">Implementasi 5G, ledakan perangkat IoT, dan integrasi kecerdasan buatan (AI) dalam manajemen jaringan.</p>
+                    </div>
+                </div>
+                <div class="mt-8">
+                     <div class="chart-container">
+                        <canvas id="speedChart"></canvas>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="profesi" class="content-section">
+                <h2 class="text-2xl font-bold text-sky-700 mb-4">Profesi dan Kewirausahaan di Bidang TJKT</h2>
+                <p class="mb-6 text-slate-600">
+                   Industri TJKT menawarkan beragam jalur karier yang menarik dan peluang wirausaha yang menjanjikan. Dari membangun dan mengamankan jaringan hingga merancang solusi nirkabel, selalu ada permintaan untuk tenaga ahli. Jelajahi beberapa profesi dan ide bisnis populer di bawah ini.
+                </p>
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 text-slate-700">Jalur Profesi</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="profession-card border p-4 rounded-lg cursor-pointer hover:shadow-md hover:border-sky-500">
+                            <h4 class="font-bold">Network Engineer</h4>
+                            <div class="details hidden mt-2 text-sm text-slate-600">
+                                <p><strong>Tugas:</strong> Merancang, membangun, dan memelihara jaringan komputer (LAN, WAN). Melakukan konfigurasi router, switch, dan firewall.</p>
+                                <p><strong>Keahlian:</strong> Cisco (CCNA/CCNP), Mikrotik, routing protocol, network security.</p>
+                            </div>
+                        </div>
+                        <div class="profession-card border p-4 rounded-lg cursor-pointer hover:shadow-md hover:border-sky-500">
+                            <h4 class="font-bold">System Administrator</h4>
+                            <div class="details hidden mt-2 text-sm text-slate-600">
+                                <p><strong>Tugas:</strong> Mengelola server (Windows/Linux), memastikan uptime, mengelola user account, dan melakukan backup data.</p>
+                                <p><strong>Keahlian:</strong> Linux, Windows Server, scripting (Bash/PowerShell), virtualisasi.</p>
+                            </div>
+                        </div>
+                         <div class="profession-card border p-4 rounded-lg cursor-pointer hover:shadow-md hover:border-sky-500">
+                            <h4 class="font-bold">Cybersecurity Analyst</h4>
+                            <div class="details hidden mt-2 text-sm text-slate-600">
+                                <p><strong>Tugas:</strong> Melindungi sistem dan jaringan dari ancaman siber, memonitor trafik, dan merespons insiden keamanan.</p>
+                                <p><strong>Keahlian:</strong> Analisis malware, penetration testing, SIEM tools, firewall.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold mt-8 mb-4 text-slate-700">Peluang Wirausaha</h3>
+                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="profession-card border p-4 rounded-lg cursor-pointer hover:shadow-md hover:border-sky-500">
+                            <h4 class="font-bold">Penyedia Jasa Instalasi Jaringan</h4>
+                            <div class="details hidden mt-2 text-sm text-slate-600">
+                                <p>Menawarkan jasa pemasangan jaringan kabel dan nirkabel untuk rumah, kantor, atau sekolah. Termasuk pemasangan CCTV dan access point.</p>
+                            </div>
+                        </div>
+                        <div class="profession-card border p-4 rounded-lg cursor-pointer hover:shadow-md hover:border-sky-500">
+                            <h4 class="font-bold">RT/RW Net</h4>
+                            <div class="details hidden mt-2 text-sm text-slate-600">
+                                <p>Membangun usaha penyedia layanan internet (ISP) skala kecil untuk lingkungan perumahan atau pedesaan dengan berbagi satu koneksi internet utama.</p>
+                            </div>
+                        </div>
+                         <div class="profession-card border p-4 rounded-lg cursor-pointer hover:shadow-md hover:border-sky-500">
+                            <h4 class="font-bold">Managed IT Services</h4>
+                            <div class="details hidden mt-2 text-sm text-slate-600">
+                                <p>Menyediakan layanan pengelolaan IT secara outsourcing untuk bisnis kecil dan menengah (UKM) yang tidak memiliki tim IT internal.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="k3lh" class="content-section">
+                <h2 class="text-2xl font-bold text-sky-700 mb-4">K3LH dan Budaya Kerja Industri</h2>
+                <p class="mb-6 text-slate-600">
+                    Keselamatan, Kesehatan Kerja, dan Lingkungan Hidup (K3LH) adalah fondasi dalam industri TJKT. Bekerja dengan perangkat listrik dan di ketinggian menuntut kepatuhan tinggi terhadap prosedur keselamatan. Di samping itu, budaya kerja yang profesional, seperti etos pemecahan masalah dan pembelajaran berkelanjutan, menjadi kunci kesuksesan.
+                </p>
+                <div class="space-y-4">
+                    <div class="accordion-item border rounded-lg overflow-hidden">
+                        <button class="accordion-header w-full text-left p-4 bg-slate-100 hover:bg-slate-200 font-semibold flex justify-between items-center">
+                            <span>Prinsip K3LH Utama</span>
+                            <span class="transform transition-transform duration-300">&#9662;</span>
+                        </button>
+                        <div class="accordion-content p-4 bg-white text-sm text-slate-600" style="max-height: 0; overflow: hidden; transition: max-height 0.5s ease;">
+                            <ul class="list-disc list-inside space-y-2">
+                                <li><strong>Keselamatan Listrik:</strong> Selalu pastikan perangkat mati dan cabut dari sumber listrik sebelum perbaikan. Gunakan alat yang terisolasi.</li>
+                                <li><strong>Ergonomi:</strong> Atur posisi monitor, kursi, dan meja untuk postur tubuh yang baik saat bekerja di depan komputer untuk waktu lama.</li>
+                                <li><strong>Bekerja di Ketinggian:</strong> Gunakan alat pelindung diri (APD) seperti helm dan sabuk pengaman saat memasang antena atau kabel di ketinggian.</li>
+                                <li><strong>Penanganan Alat:</strong> Gunakan alat sesuai fungsinya. Simpan kembali alat pada tempatnya setelah digunakan.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <div class="accordion-item border rounded-lg overflow-hidden">
+                        <button class="accordion-header w-full text-left p-4 bg-slate-100 hover:bg-slate-200 font-semibold flex justify-between items-center">
+                            <span>Budaya Kerja Profesional</span>
+                             <span class="transform transition-transform duration-300">&#9662;</span>
+                        </button>
+                        <div class="accordion-content p-4 bg-white text-sm text-slate-600" style="max-height: 0; overflow: hidden; transition: max-height 0.5s ease;">
+                             <ul class="list-disc list-inside space-y-2">
+                                <li><strong>Problem Solving:</strong> Mampu menganalisis masalah (troubleshooting) secara logis dan sistematis.</li>
+                                <li><strong>Pembelajar Seumur Hidup:</strong> Teknologi terus berkembang, sehingga kemauan untuk terus belajar hal baru adalah wajib.</li>
+                                <li><strong>Komunikasi Efektif:</strong> Mampu menjelaskan masalah teknis kepada orang non-teknis dengan bahasa yang mudah dipahami.</li>
+                                <li><strong>Manajemen Waktu:</strong> Mampu memprioritaskan tugas, terutama saat menangani beberapa gangguan jaringan sekaligus.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="soal" class="content-section">
+                <h2 class="text-2xl font-bold text-sky-700 mb-4">Latihan Soal Uraian</h2>
+                <p class="mb-6 text-slate-600">
+                    Uji pemahaman Anda terhadap materi yang telah dipelajari dengan menjawab pertanyaan-pertanyaan di bawah ini. Coba jawab terlebih dahulu sebelum melihat poin-poin kunci jawaban.
+                </p>
+                <div class="space-y-6">
+                    <div class="border-b pb-4">
+                        <p class="font-semibold">1. Jelaskan empat tahapan utama dalam proses bisnis penyediaan layanan jaringan oleh sebuah perusahaan IT, mulai dari pertemuan pertama dengan klien hingga jaringan tersebut beroperasi!</p>
+                        <button class="toggle-answer text-sm text-sky-600 font-semibold mt-2">Tampilkan Poin Kunci</button>
+                        <div class="answer-key mt-2 text-sm text-slate-600 bg-slate-50 p-3 rounded-md">
+                            <ul class="list-disc list-inside">
+                                <li>Perencanaan/Konsultasi: Memahami kebutuhan klien.</li>
+                                <li>Desain/Perancangan: Membuat topologi dan memilih perangkat.</li>
+                                <li>Implementasi/Instalasi: Pemasangan fisik dan konfigurasi.</li>
+                                <li>Operasi/Pemeliharaan: Monitoring dan perbaikan.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <div class="border-b pb-4">
+                        <p class="font-semibold">2. Bandingkan dampak teknologi 3G dan 5G terhadap kehidupan sehari-hari. Sebutkan setidaknya dua perbedaan fundamental!</p>
+                        <button class="toggle-answer text-sm text-sky-600 font-semibold mt-2">Tampilkan Poin Kunci</button>
+                        <div class="answer-key mt-2 text-sm text-slate-600 bg-slate-50 p-3 rounded-md">
+                            <ul class="list-disc list-inside">
+                                <li>Kecepatan: 5G (Gbps) jauh lebih cepat dari 3G (Mbps).</li>
+                                <li>Latensi: 5G memiliki latensi sangat rendah, memungkinkan aplikasi real-time seperti mobil otonom.</li>
+                                <li>Konektivitas: 5G mampu menghubungkan jauh lebih banyak perangkat (IoT) per area.</li>
+                                <li>Dampak 3G: Mempopulerkan internet mobile. Dampak 5G: Memungkinkan IoT, smart city, VR/AR.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <div class="border-b pb-4">
+                        <p class="font-semibold">3. Seorang teman ingin memulai usaha di bidang TJKT dengan modal terbatas. Berikan satu ide wirausaha yang paling cocok beserta alasan mengapa Anda merekomendasikannya, dan sebutkan dua keahlian utama yang ia butuhkan!</p>
+                        <button class="toggle-answer text-sm text-sky-600 font-semibold mt-2">Tampilkan Poin Kunci</button>
+                        <div class="answer-key mt-2 text-sm text-slate-600 bg-slate-50 p-3 rounded-md">
+                           <ul class="list-disc list-inside">
+                                <li>Ide Usaha: Jasa Instalasi Jaringan atau RT/RW Net.</li>
+                                <li>Alasan: Modal awal relatif kecil (tidak perlu membangun infrastruktur besar), target pasar jelas (rumah, UKM).</li>
+                                <li>Keahlian: Konfigurasi perangkat (Mikrotik/Access Point), teknik penarikan kabel (crimping, instalasi).</li>
+                           </ul>
+                        </div>
+                    </div>
+                     <div class="border-b pb-4">
+                        <p class="font-semibold">4. Mengapa prinsip ergonomi penting bagi seorang profesional TJKT yang banyak bekerja di depan komputer? Sebutkan tiga contoh penerapan ergonomi di lingkungan kerja!</p>
+                        <button class="toggle-answer text-sm text-sky-600 font-semibold mt-2">Tampilkan Poin Kunci</button>
+                        <div class="answer-key mt-2 text-sm text-slate-600 bg-slate-50 p-3 rounded-md">
+                             <ul class="list-disc list-inside">
+                                <li>Pentingnya: Mencegah cedera regangan berulang (RSI), kelelahan mata, dan masalah punggung. Meningkatkan produktivitas jangka panjang.</li>
+                                <li>Contoh: Mengatur tinggi kursi agar kaki menapak, posisi monitor sejajar mata, menggunakan keyboard dan mouse yang nyaman.</li>
+                           </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="font-semibold">5. Jelaskan mengapa budaya "pembelajar seumur hidup" (lifelong learner) sangat krusial bagi seorang Network Engineer dibandingkan dengan beberapa profesi lainnya!</p>
+                        <button class="toggle-answer text-sm text-sky-600 font-semibold mt-2">Tampilkan Poin Kunci</button>
+                        <div class="answer-key mt-2 text-sm text-slate-600 bg-slate-50 p-3 rounded-md">
+                            <ul class="list-disc list-inside">
+                                <li>Alasan: Teknologi jaringan berkembang sangat pesat (standar Wi-Fi baru, protokol keamanan baru, virtualisasi, cloud).</li>
+                                <li>Konsekuensi jika tidak belajar: Keahlian menjadi usang, tidak mampu mengamankan jaringan dari ancaman baru, kalah saing di pasar kerja.</li>
+                           </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-8 text-sm text-slate-500">
+            <p>&copy; 2025 Panduan Interaktif TJKT. Dibuat untuk tujuan edukasi.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navButtons = document.querySelectorAll('.nav-button');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    contentSections.forEach(section => {
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                        } else {
+                            section.classList.remove('active');
+                        }
+                    });
+                });
+            });
+
+            const flowItems = document.querySelectorAll('.flow-item');
+            const contentTitle = document.getElementById('content-title');
+            const contentDesc = document.getElementById('content-desc');
+            const flowContents = {
+                'bisnis-1': {
+                    title: '1. Perencanaan dan Konsultasi',
+                    desc: 'Tahap awal di mana tim bertemu dengan klien untuk mengidentifikasi kebutuhan bisnis, tujuan, batasan anggaran, dan masalah yang ada. Hasilnya adalah dokumen requirement yang menjadi dasar perancangan.'
+                },
+                'bisnis-2': {
+                    title: '2. Desain dan Perancangan Jaringan',
+                    desc: 'Berdasarkan hasil konsultasi, arsitek jaringan membuat cetak biru (blueprint) teknis. Ini mencakup pembuatan topologi jaringan, pemilihan perangkat keras (router, switch, AP), dan perancangan skema alamat IP.'
+                },
+                'bisnis-3': {
+                    title: '3. Implementasi dan Instalasi',
+                    desc: 'Tim teknis melakukan pemasangan fisik perangkat keras, penarikan kabel, dan konfigurasi perangkat lunak sesuai dengan desain. Tahap ini diakhiri dengan pengujian menyeluruh untuk memastikan semua berfungsi.'
+                },
+                'bisnis-4': {
+                    title: '4. Operasi dan Pemeliharaan',
+                    desc: 'Setelah jaringan berjalan, tim operasional akan memonitor kinerja, melakukan pembaruan keamanan, mengatasi masalah (troubleshooting), dan memberikan dukungan teknis kepada pengguna.'
+                }
+            };
+
+            flowItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const contentKey = item.dataset.content;
+                    contentTitle.textContent = flowContents[contentKey].title;
+                    contentDesc.textContent = flowContents[contentKey].desc;
+                    
+                    flowItems.forEach(i => i.classList.remove('bg-sky-100', 'border-sky-500'));
+                    item.classList.add('bg-sky-100', 'border-sky-500');
+                });
+            });
+
+            const professionCards = document.querySelectorAll('.profession-card');
+            professionCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const details = card.querySelector('.details');
+                    details.classList.toggle('hidden');
+                });
+            });
+
+            const accordions = document.querySelectorAll('.accordion-item');
+            accordions.forEach(item => {
+                const header = item.querySelector('.accordion-header');
+                const content = item.querySelector('.accordion-content');
+                const icon = header.querySelector('span:last-child');
+                header.addEventListener('click', () => {
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+            
+            const answerToggles = document.querySelectorAll('.toggle-answer');
+            answerToggles.forEach(toggle => {
+                toggle.addEventListener('click', (e) => {
+                    const answerKey = e.target.nextElementSibling;
+                     if (answerKey.style.maxHeight) {
+                        answerKey.style.maxHeight = null;
+                        e.target.textContent = 'Tampilkan Poin Kunci';
+                    } else {
+                        answerKey.style.maxHeight = answerKey.scrollHeight + 'px';
+                        e.target.textContent = 'Sembunyikan Poin Kunci';
+                    }
+                });
+            });
+            
+            const speedData = {
+                labels: ['1990-an', '2000-an', '2010-an', '2020-an'],
+                datasets: [{
+                    label: 'Kecepatan Internet Rata-rata (Mbps)',
+                    data: [0.056, 5, 50, 500],
+                    backgroundColor: [
+                        'rgba(56, 189, 248, 0.2)',
+                        'rgba(56, 189, 248, 0.2)',
+                        'rgba(56, 189, 248, 0.2)',
+                        'rgba(56, 189, 248, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(2, 132, 199, 1)',
+                        'rgba(2, 132, 199, 1)',
+                        'rgba(2, 132, 199, 1)',
+                        'rgba(2, 132, 199, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            };
+
+            const speedChartCtx = document.getElementById('speedChart').getContext('2d');
+            const mySpeedChart = new Chart(speedChartCtx, {
+                type: 'bar',
+                data: speedData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            type: 'logarithmic',
+                             ticks: {
+                                callback: function(value, index, values) {
+                                    return value + ' Mbps'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Evolusi Kecepatan Internet Global (Skala Logaritmik)'
+                        }
+                    }
+                }
+            });
+
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            timelineItems.forEach((item, index) => {
+                item.addEventListener('click', () => {
+                    const defaultBg = 'rgba(56, 189, 248, 0.2)';
+                    const highlightBg = 'rgba(14, 165, 233, 0.6)';
+                    mySpeedChart.data.datasets[0].backgroundColor.fill(defaultBg);
+                    mySpeedChart.data.datasets[0].backgroundColor[index] = highlightBg;
+                    mySpeedChart.update();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
